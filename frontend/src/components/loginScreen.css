@@ -10,11 +10,11 @@ body {
     height: 100vh;
 }
 
-.wrapper {
+.login-wrapper {
     width: auto; /* Reduced for better centering */
     max-width: 1000px; /* Set a max-width for larger screens */
     padding: 40px;
-    background-color: #e28a06;
+    background-color: #f79503;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
@@ -24,19 +24,19 @@ body {
     justify-content: center;
 }
 
-.wrapper h1 {
+.login-wrapper h1 {
     font-size: 3rem;
     color: #fff;
     margin-bottom: 10px;
 }
 
-.wrapper p {
+.login-wrapper p {
     font-size: 1.5rem;
     color: #fff;
     margin-bottom: 30px;
 }
 
-.wrapper .input-box {
+.login-wrapper .input-box {
     width: auto; /* Adjusted for better responsiveness */
     max-width: 400px; /* Set a max-width for input boxes */
     margin-bottom: 25px;
@@ -63,7 +63,7 @@ body {
     pointer-events: none;
 }
 
-.wrapper button {
+.login-wrapper button {
     padding: 15px 30px;
     background-color: #fff;
     color: #fc9904;

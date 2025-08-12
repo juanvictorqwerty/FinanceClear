@@ -4,7 +4,7 @@ import { FaUser } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import { FaEnvelope  } from 'react-icons/fa';
 
-const LoginScreen = () => {
+const SignInScreen = () => {
     return (
         <div className="wrapper">
             <form action="">
@@ -43,4 +43,4 @@ const LoginScreen = () => {
     );
 };
 
-export default LoginScreen;
+export default SignInScreen;
