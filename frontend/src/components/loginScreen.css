@@ -1,0 +1,75 @@
+/* loginScreen.css */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.wrapper {
+    width: auto; /* Reduced for better centering */
+    max-width: 1000px; /* Set a max-width for larger screens */
+    padding: 40px;
+    background-color: #e28a06;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.wrapper h1 {
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.wrapper p {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+.wrapper .input-box {
+    width: auto; /* Adjusted for better responsiveness */
+    max-width: 400px; /* Set a max-width for input boxes */
+    margin-bottom: 25px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 15px 45px 15px 15px; /* Adjusted padding for icon */
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem; /* Increased for better readability */
+    text-align: left;
+}
+
+.input-box .icon {
+    position: absolute;
+    right: 15px;
+    color: #170101; /* Changed to white for visibility */
+    font-size: 1.5rem;
+    pointer-events: none;
+}
+
+.wrapper button {
+    padding: 15px 30px;
+    background-color: #fff;
+    color: #fc9904;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
