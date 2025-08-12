@@ -2,7 +2,6 @@ import React from "react";
 import './loginScreen.css'; 
 import { FaEnvelope  } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
-import SignInScreen from "./signInScreen";
 
 const LoginScreen = () => { 
     return (
@@ -28,7 +27,7 @@ const LoginScreen = () => {
                 </div>
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
-                    <p>Or <a href="SignInScreen">Register</a></p>
+                    <p>Or <a href="signIn">Register</a></p>
                 </div>   
             </form>
         </div>

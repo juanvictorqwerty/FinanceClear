@@ -62,7 +62,7 @@ const SignInScreen = () => {
                 
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
-                    <p>Or <a href="loginScreen">Log in</a></p>
+                    <p>Or <a href="/">Log in</a></p>
                 </div>   
             </form>
         </div>
