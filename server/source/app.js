@@ -19,7 +19,8 @@ app.listen(PORT, async () => {
         await createTableIfNotExists(); // Ensure the users table exists
         console.log('Database connection established and users table checked.');
     } catch (error) {
-        console.error('Failed to connect to the database:', error);
+        console.error('Failed to initialize the server:', error);
+        process.exit(1); // Exit the application if DB connection or table setup fails
     }
 
 });
