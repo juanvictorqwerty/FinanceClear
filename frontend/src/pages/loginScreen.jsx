@@ -2,6 +2,7 @@ import React from "react";
 import './loginScreen.css'; 
 import { FaEnvelope  } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const LoginScreen = () => { 
     return (
@@ -27,7 +28,7 @@ const LoginScreen = () => {
                 </div>
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
-                    <p>Or <a href="signIn">Register</a></p>
+                    <p>Or <Link to ="/signIn">Register</Link></p>
                 </div>   
             </form>
         </div>

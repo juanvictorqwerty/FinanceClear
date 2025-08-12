@@ -3,6 +3,7 @@ import './signInScreen.css';
 import { FaUser } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import { FaEnvelope  } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const SignInScreen = () => {
 
@@ -62,7 +63,7 @@ const SignInScreen = () => {
                 
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
-                    <p>Or <a href="/">Log in</a></p>
+                    <p>Or <Link to="/">Log in</Link></p>
                 </div>   
             </form>
         </div>
