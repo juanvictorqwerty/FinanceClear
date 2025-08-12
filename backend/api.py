@@ -13,7 +13,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-DATABASE = 'c:\\Users\\JUAN MIKE\\Desktop\\Projets\\FiClear\\backend\\database.sqlite'
+DATABASE = './database.sqlite'
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
