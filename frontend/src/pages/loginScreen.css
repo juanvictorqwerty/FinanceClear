@@ -55,6 +55,10 @@ body {
     text-align: left;
 }
 
+.input-box input:invalid {
+    border: 2px solid #ff4d4d; /* Highlight invalid input */
+}
+
 .input-box .icon {
     position: absolute;
     right: 15px;
@@ -72,4 +76,21 @@ body {
     cursor: pointer;
     font-size: 1.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-wrapper button:hover {
+    background-color: #e0e0e0; /* Slight hover effect */
+}
+
+.error-alert {
+    background-color: #ff4444;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    width: 100%;
+    max-width: 400px; /* Match input-box max-width for alignment */
 }

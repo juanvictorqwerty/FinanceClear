@@ -12,14 +12,51 @@ const SignInScreen = () => {
         userName: '',
         password: '',
     });
+    const [showAlert, setShowAlert] = React.useState(false);
+    const [emailError, setEmailError] = React.useState('');
+    const [nameError, setNameError] = React.useState('');
+
     const handleInputChange=(e)=>{
         const {name,value} = e.target;
         setFormValues({...formValues,[name]:value});
+        if (name === 'userEmail') {
+            setShowAlert(false);
+            setEmailError('');
+        }
+        if (name === 'userName') {
+            setShowAlert(false);
+            setNameError('');
+        }
     }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!isEmailValid(formValues.userEmail)) {
+            setEmailError('Invalid email format. Please use a valid ICT University email.');
+            setShowAlert(true);
+            return;
+        }
+        if (!isNameValid(formValues.userName)) {
+            setNameError('Invalid name format. Please enter your name as in your ID.');
+            setShowAlert(true);
+            return;
+        }
+        
+        // Valid email and password provided
+        console.log('Form submitted successfully');
+    };
+
+    const isEmailValid = (email) => {
+        return /^[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm$/.test(email);
+    };
+
+    const isNameValid = (name) => {
+        return /^[a-zA-Z\s]+$/.test(name);
+    };
 
     return (
         <div className="wrapper">
-            <form action="">
+            <form onSubmit={handleSubmit}>
                 
                 <h1>Sign In</h1>
 
@@ -34,7 +71,10 @@ const SignInScreen = () => {
                     <input type="email" 
                     placeholder="Your ICTU email" required
                     name="userEmail" 
-                    value={formValues.userEmail}/>
+                    value={formValues.userEmail}
+                    onChange={handleInputChange}
+                    pattern="[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm"
+                    title="Please enter a valid ICT University email address (e.g., example@ictuniversity.edu.cm)" />
                     <FaEnvelope className="icon" />
                 </div>
 
@@ -61,7 +101,22 @@ const SignInScreen = () => {
                     <FaLock className="icon" />
                 </div>
                 
-                <button type="submit" className="btn">Login</button>
+                {showAlert && (
+                    <div style={{
+                        backgroundColor: '#ff4444',
+                        color: '#fff',
+                        padding: '10px',
+                        margin: '10px 0',
+                        borderRadius: '4px',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        fontSize: '16px'
+                    }}>
+                        {emailError || nameError}
+                    </div>
+                )}
+
+                <button type="submit" className="btn">Sign In</button>
                 <div className="register-link">
                     <p>Or <Link to="/">Log in</Link></p>
                 </div>   
