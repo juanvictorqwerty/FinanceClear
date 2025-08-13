@@ -28,7 +28,7 @@ function CheckUser() {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5-second timeout
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/check_user/?name=${encodeURIComponent(username)}`, {
+      const response = await fetch(`http://127.0.0.1:5000/api/users/check_user?name=${encodeURIComponent(username)}`, {
         signal: controller.signal,
       });
 
