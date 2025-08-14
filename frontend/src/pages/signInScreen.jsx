@@ -22,7 +22,8 @@ const navigate = useNavigate();
 
     const handleInputChange=async(e)=>{
         const {name,value} = e.target;
-        let processedValue = value.trim();
+        // Trim all inputs except passwords
+        let processedValue = (name === 'password' || name === 'confirmPassword') ? value : value.trim();
         
         // Apply matricule validation: only letters and numbers
         if (name === 'matricule') {
