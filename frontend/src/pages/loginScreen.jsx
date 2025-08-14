@@ -46,7 +46,9 @@ const LoginScreen = () => {
                 password: formValues.password
             });
             if (response.data.success){
-                toast.success(response.data.message || "Login Successful")
+                toast.success(response.data.message || "Login Successful")                
+                const token= response.data.token;
+                sessionStorage.setItem("authToken",token)
                 navigate('/Home');
             }else{
                 toast.error(response.data.message || "Login Failed")

@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { pool } from '../config/database.js';
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET= "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay";
+const JWT_SECRET= "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147"; //will be moved to the dotenv
 
 export const registerUser=async(user)=>{
     console.log('Registering user:', user);
@@ -48,5 +48,20 @@ export const loginUser = async(userEmail,password)=>{
     } catch (error){
         console.error('Login service error:', error);
         return {success:false,message:"Login failed. Please try again later."}
+    }
+}
+
+export const getUserToken=async(token)=>{
+    try {
+        const trimmedToken=token.trim();
+        const decodedToken=await jwt.verify(trimmedToken,JWT_SECRET)
+
+        const rows = await pool.query(`Select email,username,matricule from user where email=?` ,[decodedToken.id]);
+        if(rows.length===0){
+            return {success:false,message:"user not found"}
+        }
+        return {success:true,data:rows[0]}
+    }catch(error){
+        return {success:false, message:"Invalid token"}
     }
 }
