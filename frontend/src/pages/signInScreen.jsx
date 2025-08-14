@@ -3,20 +3,23 @@ import './signInScreen.css';
 import { FaUser } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import { FaEnvelope  } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignInScreen = () => {
+const navigate = useNavigate();
 
     const[formValues,setFormValues] = React.useState({
         userEmail: '',
         userName: '',
         password: '',
+        confirmPassword: '',
     });
     const [showAlert, setShowAlert] = React.useState(false);
     const [emailError, setEmailError] = React.useState('');
     const [nameError, setNameError] = React.useState('');
+    const [passwordError, setPasswordError] = React.useState('');
 
-    const handleInputChange=(e)=>{
+    const handleInputChange=async(e)=>{
         const {name,value} = e.target;
         setFormValues({...formValues,[name]:value});
         if (name === 'userEmail') {
@@ -27,10 +30,20 @@ const SignInScreen = () => {
             setShowAlert(false);
             setNameError('');
         }
+        if (name === 'password' || name === 'confirmPassword') {
+            setShowAlert(false);
+            setPasswordError('');
+        }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Reset all errors
+        setEmailError('');
+        setNameError('');
+        setPasswordError('');
+        
         if (!isEmailValid(formValues.userEmail)) {
             setEmailError('Invalid email format. Please use a valid ICT University email.');
             setShowAlert(true);
@@ -41,10 +54,69 @@ const SignInScreen = () => {
             setShowAlert(true);
             return;
         }
+        if (formValues.password !== formValues.confirmPassword) {
+            setPasswordError('Passwords do not match. Please check your password and confirmation.');
+            setShowAlert(true);
+            return;
+        }
+        if (formValues.password.length < 6) {
+            setPasswordError('Password must be at least 6 characters long.');
+            setShowAlert(true);
+            return;
+        }
         
-        // Valid email and password provided
-        console.log('Form submitted successfully');
-    };
+        // Prepare data for server - only send password, not confirmPassword
+        const serverData = {
+            userEmail: formValues.userEmail,
+            userName: formValues.userName,
+            password: formValues.password
+        };
+        
+        try {
+            const API_URL = 'http://localhost:5000/api/auth/register-user';
+            
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(serverData),
+            });
+
+            // Always parse the response as JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server returned invalid response format');
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                console.log('Registration successful:', data);
+                // Redirect to home page after successful registration
+                navigate('/Home');
+            } else {
+                console.error('Registration failed:', data.message);
+                setPasswordError(data.message || 'Registration failed. Please try again.');
+                setShowAlert(true);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            
+            let errorMessage = 'An error occurred during registration.';
+            
+            if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                errorMessage = 'Network error. Please check your internet connection and try again.';
+            } else if (error.message.includes('invalid response format')) {
+                errorMessage = 'Server returned an invalid response. Please contact support.';
+            } else {
+                errorMessage = error.message || 'Registration failed. Please try again.';
+            }
+            
+            setPasswordError(errorMessage);
+            setShowAlert(true);
+        }
+    }; // <-- Added missing closing brace for handleSubmit
 
     const isEmailValid = (email) => {
         return /^[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm$/.test(email);
@@ -74,7 +146,7 @@ const SignInScreen = () => {
                     value={formValues.userEmail}
                     onChange={handleInputChange}
                     pattern="[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm"
-                    title="Please enter a valid ICT University email address (e.g., example@ictuniversity.edu.cm)" />
+                    title="Please enter a valid ICT University email address (example@ictuniversity.edu.cm)" />
                     <FaEnvelope className="icon" />
                 </div>
 
@@ -97,7 +169,11 @@ const SignInScreen = () => {
                 </div>
 
                 <div className="input-box"> 
-                    <input type="password" placeholder="Confirm your password" required />
+                    <input type="password" 
+                    placeholder="Confirm your password" required
+                    name="confirmPassword"
+                    value={formValues.confirmPassword}
+                    onChange={handleInputChange} />
                     <FaLock className="icon" />
                 </div>
                 
@@ -112,7 +188,7 @@ const SignInScreen = () => {
                         fontWeight: 'bold',
                         fontSize: '16px'
                     }}>
-                        {emailError || nameError}
+                        {emailError || nameError || passwordError}
                     </div>
                 )}
 
