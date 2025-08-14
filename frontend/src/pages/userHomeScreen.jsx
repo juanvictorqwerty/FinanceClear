@@ -22,13 +22,14 @@ function UserHomeScreen() {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            });
+            },
+            );
 
             if (response.data.success) {
                 console.log(response.data);
-                // Handle different response structures
-                const userInfo = response.data.data || response.data.user || response.data;
-                setUserData(userInfo);
+                // Handle array response structure
+                const userData = response.data.data[0]; // Get first item from array
+                setUserData(userData);
             } else {
                 console.log("No data fetched:", response.data.message);
             }
@@ -49,18 +50,19 @@ function UserHomeScreen() {
             </>
         );
     }
-
-    return (
+    
+    return ( //this are supposed to be the same name as database columns
         <>
             <div>
                 <h2 style={{ textAlign: "center" }}>Welcome to Home Screen</h2>
             </div>
             <div>
-                <h3 style={{ textAlign: "center" }}>User Details</h3>
+                <h3 style={{ textAlign: "center" }}>User Details</h3> 
                 {userData ? (
                     <>
-                        <p style={{ textAlign: "center" }}>Name: {userData.userName || 'N/A'}</p>
-                        <p style={{ textAlign: "center" }}>Email: {userData.userEmail || 'N/A'}</p>
+                        <p style={{ textAlign: "center" }}>Name: {userData.username}</p> 
+                        <p style={{ textAlign: "center" }}>Email: {userData.email}</p>
+                        <p style={{ textAlign: "center" }}>Matricule: {userData.matricule}</p>
                     </>
                 ) : (
                     <p style={{ textAlign: "center" }}>No user data available</p>

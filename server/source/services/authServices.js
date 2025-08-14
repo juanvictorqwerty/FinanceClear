@@ -35,7 +35,7 @@ export const loginUser = async(userEmail,password)=>{
             return {success:false,message:"Invalid email or password"}
         }
         const token = jwt.sign(
-            {id:user.id,email:user.email},
+            {email:user.email},
             JWT_SECRET,
             {expiresIn:'1h'}
         )
@@ -56,7 +56,7 @@ export const getUserToken=async(token)=>{
         const trimmedToken=token.trim();
         const decodedToken=await jwt.verify(trimmedToken,JWT_SECRET)
 
-        const rows = await pool.query(`Select email,username,matricule from user where email=?` ,[decodedToken.id]);
+        const rows = await pool.query(`Select email,username,matricule from user where email=?` ,[decodedToken.email]);
         if(rows.length===0){
             return {success:false,message:"user not found"}
         }

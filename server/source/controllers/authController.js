@@ -1,4 +1,4 @@
-import { registerUser, loginUser } from "../services/authServices.js";
+import { registerUser, loginUser, getUserToken } from "../services/authServices.js";
 
 export const registerUsersController= async(request, front_res)=>{ 
     const {userEmail, userName, password,matricule} = request.body; //registration info the user sent
@@ -45,9 +45,20 @@ export const loginUserController= async(request,front_res)=>{
         });
     }
 }
-export const getUserFromToken = async (request,front_res)=>{
-    const token = request.headers.authorization.split(' ')(1);
-    if(!token){
-        return front_res.status(400).json({success:false,message:"Token not provided"});
+export const getUserFromToken = async (request, front_res) => {
+    const token = request.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return front_res.status(400).json({ success: false, message: "Token not provided" });
+    }
+    try {
+        const response = await getUserToken(token);
+        if (response.success) {
+            return front_res.status(200).json(response);
+        } else {
+            return front_res.status(400).json(response);
+        }
+    } catch (error) {
+        console.error('Get user from token error:', error);
+        return front_res.status(500).json({ success: false, message: "Login Failed" });
     }
 }

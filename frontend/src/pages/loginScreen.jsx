@@ -41,7 +41,7 @@ const LoginScreen = () => {
         // Valid email and password provided
         console.log('Form submitted successfully');
         try{
-            const response=await axios.post("http://localhost:5000/api/auth/login-user",{
+            const response=await axios.post("http://localhost:5000/api/auth/login-user",{  //login actually
                 userEmail: formValues.userEmail,
                 password: formValues.password
             });
@@ -56,8 +56,7 @@ const LoginScreen = () => {
         }catch(error){
             console.log("error",error.response.data);
             toast.error(error.response.data.message || "Something went wrong");
-        }
-            
+        }             
     };
 
     const isEmailValid = (email) => {
@@ -96,9 +95,7 @@ const LoginScreen = () => {
                     <input type="password" placeholder="Your ICTU password" required name="password" value={formValues.password} onChange={handleInputChange} />
                     <FaLock className="icon" />
                 </div>
-                <div className="remember-forgot">
-                    <label><input type="checkbox" />Remember me</label>
-                </div>
+                
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
                     <p>Or <Link to="/signIn">Register</Link></p>
