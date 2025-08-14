@@ -3,6 +3,7 @@ class UserModelClass {
         this.userEmail=user.userEmail;
         this.userName=user.userName;
         this.password=user.password;
+        this.matricule=user.matricule
     }
 }
 

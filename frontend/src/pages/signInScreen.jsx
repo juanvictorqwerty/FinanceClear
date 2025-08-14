@@ -13,6 +13,7 @@ const navigate = useNavigate();
         userName: '',
         password: '',
         confirmPassword: '',
+        matricule:'',
     });
     const [showAlert, setShowAlert] = React.useState(false);
     const [emailError, setEmailError] = React.useState('');
@@ -21,7 +22,15 @@ const navigate = useNavigate();
 
     const handleInputChange=async(e)=>{
         const {name,value} = e.target;
-        setFormValues({...formValues,[name]:value});
+        let processedValue = value.trim();
+        
+        // Apply matricule validation: only letters and numbers
+        if (name === 'matricule') {
+            processedValue = processedValue.replace(/[^a-zA-Z0-9]/g, '');
+        }
+        
+        setFormValues({...formValues,[name]:processedValue});
+        
         if (name === 'userEmail') {
             setShowAlert(false);
             setEmailError('');
@@ -49,11 +58,7 @@ const navigate = useNavigate();
             setShowAlert(true);
             return;
         }
-        if (!isNameValid(formValues.userName)) {
-            setNameError('Invalid name format. Please enter your name as in your ID.');
-            setShowAlert(true);
-            return;
-        }
+        
         if (formValues.password !== formValues.confirmPassword) {
             setPasswordError('Passwords do not match. Please check your password and confirmation.');
             setShowAlert(true);
@@ -69,7 +74,8 @@ const navigate = useNavigate();
         const serverData = {
             userEmail: formValues.userEmail,
             userName: formValues.userName,
-            password: formValues.password
+            password: formValues.password,
+            matricule: formValues.matricule
         };
         
         try {
@@ -116,16 +122,12 @@ const navigate = useNavigate();
             setPasswordError(errorMessage);
             setShowAlert(true);
         }
-    }; // <-- Added missing closing brace for handleSubmit
+    };
 
     const isEmailValid = (email) => {
-        return /^[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm$/.test(email);
+        return /^[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm$/.test(email);
     };
-
-    const isNameValid = (name) => {
-        return /^[a-zA-Z\s]+$/.test(name);
-    };
-
+    
     return (
         <div className="wrapper">
             <form onSubmit={handleSubmit}>
@@ -136,7 +138,7 @@ const navigate = useNavigate();
                     src="/logo.png" 
                     alt="FiClear logo with stylized blue and green text, conveying a welcoming and professional tone"
                     className="logo"
-                    style={{ width: '120px', height: 'auto' }} /* Slightly larger logo */
+                    style={{ width: '120px', height: 'auto' }}
                 />
 
                 <div className="input-box">
@@ -151,12 +153,21 @@ const navigate = useNavigate();
                 </div>
 
                 <div className="input-box"> 
-                    <input type="text" 
+                    <input type="varchar" 
                     placeholder="Your name as in your ID" required 
                     name="userName"
                     value={formValues.userName}
                     onChange={handleInputChange}/>
                 <FaUser className="icon" />
+                </div>
+
+                <div className="input-box">
+                    <input type="varchar"
+                    placeholder="Your Matricule (optional)"
+                    name="matricule"
+                    value={formValues.matricule}
+                    onChange={handleInputChange}/>
+                <FaUser className="icon"/>                
                 </div>
 
                 <div className="input-box"> 

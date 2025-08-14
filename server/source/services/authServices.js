@@ -6,8 +6,8 @@ export const registerUser=async(user)=>{
 
     try {
         const hashedPassword = await bcrypt.hash(user.password, 10)
-        const registration_query= `INSERT INTO user(email, username, password) VALUES (?, ?, ?)`
-        const values = [user.userEmail, user.userName, hashedPassword];
+        const registration_query= `INSERT INTO user(email, username, password,matricule) VALUES (?, ?, ?,?)`
+        const values = [user.userEmail, user.userName, hashedPassword,user.matricule];
 
         await pool.query(registration_query, values)
         return {success:true, message:"User saved successfully"}

@@ -6,6 +6,7 @@ const createUsersTableQuery = `
         email VARCHAR(255) PRIMARY KEY,
         username VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
+        matricule VARCHAR(255) UNIQUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
 

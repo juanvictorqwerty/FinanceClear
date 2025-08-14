@@ -1,8 +1,7 @@
-import UserModelClass from "../models/userModel.js";
 import { registerUser } from "../services/authServices.js";
 
 export const registerUsersController= async(request, front_res)=>{ 
-    const {userEmail, userName, password} = request.body; //registration info the user sent
+    const {userEmail, userName, password,matricule} = request.body; //registration info the user sent
     
     if(!userEmail || !userName || !password){
         return front_res.status(400).json({
@@ -14,7 +13,8 @@ export const registerUsersController= async(request, front_res)=>{
     const user = {
         userEmail: userEmail,
         userName: userName,
-        password: password
+        password: password,
+        matricule: matricule
     };
 
     try {
