@@ -14,7 +14,7 @@ export const registerUser=async(user)=>{
     } catch (error) {
         console.error('Registration error:', error);
         if (error.code === 'ER_DUP_ENTRY') {
-            return {success:false, message:"Account with the email already exists, try to log in"}
+            return {success:false, message:"Account with the email or matricule already exists, try to log in"}
         }
         return {success:false, message:"Registration failed. Please try again."}
     }
