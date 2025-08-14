@@ -5,9 +5,10 @@ import { lazy, Suspense } from 'react';
 // Lazy load all components
 const LoginScreen = lazy(() => import('./pages/loginScreen'));
 const SignInScreen = lazy(() => import('./pages/signInScreen'));
-const CheckUser = lazy(() => import('./CheckUser'));
+const CheckUser = lazy(() => import('./pages/CheckUser'));
 const NotFound = lazy(() => import('./pages/page_not_found'));
 const Admin = lazy(() => import('./pages/ADMIN'));
+const UserHomeScreen=lazy(()=>import('./pages/userHomeScreen'))
 
 function App() {
 
@@ -21,7 +22,8 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginScreen />} />
             <Route path="/signIn" element={<SignInScreen />} />
-            <Route path="/Home" element={isLoggedin ? <CheckUser /> : <Navigate to={"/"}/> } />
+            <Route path="/Check user" element={isLoggedin ? <CheckUser /> : <Navigate to={"/"}/> } />
+            <Route path= "/Home" element={isLoggedin ? <UserHomeScreen/> : <Navigate to={"/"}/> } />
             <Route path="/admin" element={isAdmin ? <Admin /> : <Navigate to={"/"} />} />
 
             <Route path="*" element={<NotFound />} />
