@@ -14,7 +14,7 @@ function UserHomeScreen() {
 
     const fetchUserDetails = async () => {
         try {
-            const token = sessionStorage.getItem("authToken");
+            const token = localStorage.getItem("authToken");
             if (!token) {
                 console.log("No token found");
                 setLoading(false);

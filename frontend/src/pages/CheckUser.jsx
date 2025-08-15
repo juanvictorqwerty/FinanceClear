@@ -21,7 +21,7 @@ function CheckUser() {
     setUserExists(null);
 
     // Normalize username before sending the request
-    const normalizedUsername = username.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    //const normalizedUsername = username.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
     const controller = new AbortController();
     // 5-second timeout
