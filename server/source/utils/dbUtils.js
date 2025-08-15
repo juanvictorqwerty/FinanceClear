@@ -6,6 +6,7 @@ const createUsersTableQuery = `
         email VARCHAR(255) PRIMARY KEY,
         username VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
+        matricule VARCHAR(255) UNIQUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
 
@@ -16,11 +17,11 @@ const createProfilesTableQuery = `
         username VARCHAR(255) NOT NULL,
         used_receipt JSON,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        graduation_fee_paid BOOLEAN DEFAULT FALSE CHECK ,
-        internship_fee_paid BOOLEAN DEFAULT FALSE CHECK ,
+        graduation_fee_paid BOOLEAN DEFAULT FALSE NOT NULL,
+        internship_fee_paid BOOLEAN DEFAULT FALSE NOT NULL,
         school_fee_due INT DEFAULT 365000 CHECK (school_fee_due >= 0),
-        penalty_fee INT DEFAULT 0 CHECK (penalty_fee >= 0),
-        excess_fee INT DEFAULT 0 CHECK (excess_fee >= 0),
+        penalty_fee INT DEFAULT 0 CHECK (penalty_fee >= 0) NOT NULL,
+        excess_fee INT DEFAULT 0 CHECK (excess_fee >= 0) NOT NULL,
         FOREIGN KEY (email) REFERENCES \`user\`(email)
     )`;
 

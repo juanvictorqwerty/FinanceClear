@@ -1,7 +1,9 @@
 import React from "react";
 import './loginScreen.css'; 
+import axios from 'axios';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 const LoginScreen = () => {
     const navigate = useNavigate();
@@ -14,13 +16,15 @@ const LoginScreen = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value });
+        // Trim all inputs except passwords
+        const trimmedValue = name === 'password' ? value : value.trim();
+        setFormValues({ ...formValues, [name]: trimmedValue });
         // Reset alert and error on input change to avoid showing stale errors
         setShowAlert(false);
         setEmailError('');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!isEmailValid(formValues.userEmail)) {
             setEmailError('Invalid email format. Please use a valid ICT University email.');
@@ -36,11 +40,27 @@ const LoginScreen = () => {
         
         // Valid email and password provided
         console.log('Form submitted successfully');
-        navigate('/Home');
+        try{
+            const response=await axios.post("http://localhost:5000/api/auth/login-user",{  //login actually
+                userEmail: formValues.userEmail,
+                password: formValues.password
+            });
+            if (response.data.success){
+                toast.success(response.data.message || "Login Successful")                
+                const token= response.data.token;
+                sessionStorage.setItem("authToken",token)
+                navigate('/Home');
+            }else{
+                toast.error(response.data.message || "Login Failed")
+            }
+        }catch(error){
+            console.log("error",error.response.data);
+            toast.error(error.response.data.message || "Something went wrong");
+        }             
     };
 
     const isEmailValid = (email) => {
-        return /^[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm$/.test(email);
+        return /^[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm$/.test(email);
     };
 
     return (
@@ -75,9 +95,7 @@ const LoginScreen = () => {
                     <input type="password" placeholder="Your ICTU password" required name="password" value={formValues.password} onChange={handleInputChange} />
                     <FaLock className="icon" />
                 </div>
-                <div className="remember-forgot">
-                    <label><input type="checkbox" />Remember me</label>
-                </div>
+                
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
                     <p>Or <Link to="/signIn">Register</Link></p>
