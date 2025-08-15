@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense} from 'react';
 
 // Lazy load all components
 const LoginScreen = lazy(() => import('./pages/loginScreen'));
@@ -12,20 +12,20 @@ const UserHomeScreen=lazy(()=>import('./pages/userHomeScreen'))
 const Clearances=lazy(()=>import('./pages/grantedClearances'))
 
 function App() {
-  const isLoggedIn=true;
+  const isLoggedIn = JSON.parse(localStorage.getItem("keepLoggedIn")) && localStorage.getItem("authToken");
   const isAdmin=true;
 
-  return (
+  return ( // the ? should not be spaced
     <div className="App">
       <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<LoginScreen />} />
             <Route path="/signIn" element={<SignInScreen />} />
-            <Route path="/Check user" element={isLoggedIn ? <CheckUser /> : <Navigate to={"/"}/> } />
-            <Route path= "/Home" element={isLoggedIn ? <UserHomeScreen/> : <Navigate to={"/"}/> } />
-            <Route path="/admin" element={isAdmin ? <Admin /> : <Navigate to={"/"} />} />
-            <Route path="/clearances" element={isLoggedIn ? <Clearances/> : <Navigate to={"/"}/> } />
+            <Route path="/Check user" element={isLoggedIn?<CheckUser /> : <Navigate to={"/"}/> } />
+            <Route path= "/Home" element={isLoggedIn?<UserHomeScreen/> : <Navigate to={"/"}/> } />
+            <Route path="/admin" element={isAdmin?<Admin /> : <Navigate to={"/"} />} />
+            <Route path="/clearances" element={isLoggedIn?<Clearances/> : <Navigate to={"/"}/> } />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
