@@ -1,0 +1,28 @@
+/* User Home Screen Styles */
+.user-home-container {
+    padding-top: 80px; /* Account for fixed header height */
+}
+
+.user-home-container h2,
+.user-home-container h3,
+.user-home-container p {
+    margin: 1rem 0;
+}
+
+.user-details-section {
+    margin: 2rem auto;
+    max-width: 600px;
+    padding: 1rem;
+}
+
+.user-details-section p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-home-container {
+        padding-top: 120px; /* Larger padding for mobile stacked header */
+    }
+}
