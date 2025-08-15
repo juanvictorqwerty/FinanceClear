@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import './loginScreen.css'; 
 import axios from 'axios';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
@@ -13,6 +13,8 @@ const LoginScreen = () => {
     });
     const [showAlert, setShowAlert] = React.useState(false);
     const [emailError, setEmailError] = React.useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -48,7 +50,15 @@ const LoginScreen = () => {
             if (response.data.success){
                 toast.success(response.data.message || "Login Successful")                
                 const token= response.data.token;
-                sessionStorage.setItem("authToken",token)
+                localStorage.setItem("authToken", token);
+                localStorage.setItem("keepLoggedIn", JSON.stringify(true));
+                
+                // Store user data in localStorage for persistence
+                localStorage.setItem("userInfo", JSON.stringify({
+                    isLoggedIn: true,
+                    userData: response.data.user
+                }));
+                
                 navigate('/Home');
             }else{
                 toast.error(response.data.message || "Login Failed")
@@ -59,9 +69,72 @@ const LoginScreen = () => {
         }             
     };
 
+    // Auto-login check on component mount
+    useEffect(() => {
+        const checkAutoLogin = async () => {
+            try {
+                const token = localStorage.getItem("authToken");
+                const keepLoggedIn = JSON.parse(localStorage.getItem("keepLoggedIn"));
+                const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+                if (token && keepLoggedIn && userInfo?.isLoggedIn) {
+                    // Validate token by making a quick API call
+                    const response = await axios.get("http://localhost:5000/api/auth/get-userData", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (response.data.success) {
+                        // Token is valid, redirect to home
+                        toast.success("Welcome back!");
+                        navigate('/Home');
+                    } else {
+                        // Token is invalid, clear localStorage
+                        localStorage.removeItem("authToken");
+                        localStorage.removeItem("keepLoggedIn");
+                        localStorage.removeItem("userInfo");
+                        setIsCheckingAuth(false);
+                    }
+                } else {
+                    // No valid login data found
+                    setIsCheckingAuth(false);
+                }
+            } catch (error) {
+                console.error("Auto-login check failed:", error);
+                // Clear potentially corrupted data
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("keepLoggedIn");
+                localStorage.removeItem("userInfo");
+                setIsCheckingAuth(false);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        checkAutoLogin();
+    }, [navigate]);
+
     const isEmailValid = (email) => {
         return /^[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm$/.test(email);
     };
+
+    if (isLoading || isCheckingAuth) {
+        return (
+            <div className="login-wrapper">
+                <div className="loading-container">
+                    <img 
+                        src="/logo.png" 
+                        alt="FiClear logo"
+                        className="logo"
+                        style={{ width: '120px', height: 'auto', marginBottom: '20px' }}
+                    />
+                    <h2>Checking authentication...</h2>
+                    <div className="spinner"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="login-wrapper">
@@ -86,7 +159,7 @@ const LoginScreen = () => {
                         name="userEmail"
                         value={formValues.userEmail}
                         onChange={handleInputChange}
-                        pattern="[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm"
+                        pattern="[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm"
                         title="Please enter a valid ICT University email address (e.g., example@ictuniversity.edu.cm)"
                     />
                     <FaEnvelope className="icon" />

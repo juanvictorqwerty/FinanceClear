@@ -100,7 +100,9 @@ const navigate = useNavigate();
             
             if (data.success) {
                 console.log('Registration successful:', data);
-                // Redirect to home page after successful registration
+                // Store token and redirect
+                localStorage.setItem("authToken", data.token);
+                localStorage.setItem("keepLoggedIn", JSON.stringify(true));
                 navigate('/Home');
             } else {
                 console.error('Registration failed:', data.message);
@@ -148,7 +150,7 @@ const navigate = useNavigate();
                     name="userEmail" 
                     value={formValues.userEmail}
                     onChange={handleInputChange}
-                    pattern="[a-zA-Z0-9._%+\-]+@ictuniversity\.edu\.cm"
+                    pattern="[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm"
                     title="Please enter a valid ICT University email address (example@ictuniversity.edu.cm)" />
                     <FaEnvelope className="icon" />
                 </div>
