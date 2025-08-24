@@ -251,6 +251,100 @@ class GoogleSheetsService {
             };
         }
     }
+    /**
+     * Search for a value in a Google Sheet
+     * @param {string} spreadsheetId - The ID of the spreadsheet
+     * @param {string} sheetName - The name of the sheet to search
+     * @param {string} query - The value to search for
+     * @returns {Promise<Object>} Result object with search result
+     */
+    async searchSheet(spreadsheetId, sheetName, query) {
+        try {
+            await this.ensureInitialized();
+
+            // Get spreadsheet info to determine the actual range
+            const infoResult = await this.getSpreadsheetInfo(spreadsheetId);
+            if (!infoResult.success) {
+                return infoResult; // Propagate error
+            }
+
+            const sheetInfo = infoResult.data.sheets.find(s => s.title === sheetName);
+            if (!sheetInfo) {
+                return {
+                    success: false,
+                    message: `Sheet with name '${sheetName}' not found.`
+                };
+            }
+
+            const columnCount = sheetInfo.gridProperties.columnCount;
+            const columnLetter = this._toColumnName(columnCount);
+            const range = `${sheetName}!A1:${columnLetter}`;
+
+            // Read the entire sheet
+            const readResult = await this.readSheet(spreadsheetId, range);
+
+            if (!readResult.success) {
+                return readResult; // Propagate the error from readSheet
+            }
+
+            const rows = readResult.data;
+            if (!rows || rows.length === 0) {
+                return {
+                    success: true,
+                    found: false,
+                    message: 'Sheet is empty or no data found'
+                };
+            }
+
+            // Get the header row to dynamically find columns
+            const headerRow = rows[0];
+            const queryLower = query.toLowerCase(); // Case-insensitive search
+
+            // Search for the query in all rows and all columns
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header
+                const row = rows[i];
+                for (let j = 0; j < headerRow.length; j++) { // Search all columns in the header
+                    if (row[j] && row[j].toLowerCase().includes(queryLower)) {
+                        // Found a match
+                        const matchedRow = {};
+                        headerRow.forEach((header, index) => {
+                            matchedRow[header] = row[index] || '';
+                        });
+                        return {
+                            success: true,
+                            found: true,
+                            data: matchedRow,
+                            message: 'Data found successfully'
+                        };
+                    }
+                }
+            }
+
+            // If no match is found after checking all rows
+            return {
+                success: true,
+                found: false,
+                message: 'No matching data found'
+            };
+        } catch (error) {
+            console.error('Error searching sheet:', error);
+            return {
+                success: false,
+                message: 'Failed to search sheet data',
+                error: error.message
+            };
+        }
+    }
+
+    _toColumnName(num) {
+        let columnName = '';
+        while (num > 0) {
+            const remainder = (num - 1) % 26;
+            columnName = String.fromCharCode(65 + remainder) + columnName;
+            num = Math.floor((num - 1) / 26);
+        }
+        return columnName;
+    }
 }
 
 // Export a singleton instance

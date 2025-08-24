@@ -218,6 +218,32 @@ export const batchReadSheetController = async (req, res) => {
 };
 
 /**
+ * Search for a value in a Google Sheet
+ */
+export const searchSheetController = async (req, res) => {
+    try {
+        const { spreadsheetId, sheetName, query } = req.query; // Using req.query for GET requests
+
+        if (!spreadsheetId || !sheetName || !query) {
+            return res.status(400).json({
+                success: false,
+                message: 'spreadsheetId, sheetName, and query are required'
+            });
+        }
+
+        const result = await googleSheetsService.searchSheet(spreadsheetId, sheetName, query);
+        
+        return res.status(result.success ? 200 : 404).json(result);
+    } catch (error) {
+        console.error('Search sheet controller error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error while searching sheet'
+        });
+    }
+};
+
+/**
  * Get data from a specific sheet by name
  */
 export const readSheetByNameController = async (req, res) => {
