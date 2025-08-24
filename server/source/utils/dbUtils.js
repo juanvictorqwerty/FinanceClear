@@ -3,8 +3,8 @@ import { pool } from '../config/database.js';
 
 const createUsersTableQuery = `
     CREATE TABLE IF NOT EXISTS \`user\` (
-        email VARCHAR(255) PRIMARY KEY,
-        username VARCHAR(255) NOT NULL,
+                email VARCHAR(255) PRIMARY KEY,
+        username VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         matricule VARCHAR(255) UNIQUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -23,6 +23,7 @@ const createProfilesTableQuery = `
         penalty_fee INT DEFAULT 0 CHECK (penalty_fee >= 0) NOT NULL,
         excess_fee INT DEFAULT 0 CHECK (excess_fee >= 0) NOT NULL,
         FOREIGN KEY (email) REFERENCES \`user\`(email)
+        FOREIGN KEY (username) REFERENCES \`user\`(username)
     )`;
 
 const createUsedUBA_receiptTableQuery = `
