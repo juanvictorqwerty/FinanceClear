@@ -251,6 +251,7 @@ class GoogleSheetsService {
             };
         }
     }
+
     /**
      * Search for a value in a Google Sheet
      * @param {string} spreadsheetId - The ID of the spreadsheet
@@ -345,7 +346,7 @@ class GoogleSheetsService {
         }
         return columnName;
     }
-}
+
 
 // Export a singleton instance
 const googleSheetsService = new GoogleSheetsService();

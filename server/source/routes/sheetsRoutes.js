@@ -1,5 +1,8 @@
 import express from 'express';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 17777a2b8a27824643fb35bb198f88972a1dadd7
 import {
     readSheetController,
     writeSheetController,
@@ -7,9 +10,13 @@ import {
     clearSheetController,
     getSpreadsheetInfoController,
     batchReadSheetController,
+<<<<<<< HEAD
     readSheetByNameController,
     searchSheetController,
     createSpreadsheetController
+=======
+    readSheetByNameController
+>>>>>>> 17777a2b8a27824643fb35bb198f88972a1dadd7
 } from '../controllers/sheetsController.js';
 
 const router = express.Router();
@@ -48,6 +55,7 @@ router.post('/batch-read', batchReadSheetController);
 // Body: { spreadsheetId: string, sheetName: string, startRow?: number, endRow?: number, startCol?: string, endCol?: string }
 router.post('/read-by-name', readSheetByNameController);
 
+<<<<<<< HEAD
 // Search for a value in a Google Sheet
 // GET /api/sheets/search?spreadsheetId=...&sheetName=...&query=...
 router.get('/search', searchSheetController);
@@ -57,4 +65,6 @@ router.get('/search', searchSheetController);
 // Body: { title: string, sheetTitles?: Array<string> }
 router.post('/create', createSpreadsheetController);
 
+=======
+>>>>>>> 17777a2b8a27824643fb35bb198f88972a1dadd7
 export default router;
