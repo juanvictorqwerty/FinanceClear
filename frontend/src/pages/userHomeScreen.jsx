@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Header from "../components/header";
+import Search from "../components/Search"; // Import the Search component
 import "./userHomeScreen.css";
+import "../components/Search.css"; // Import the CSS for the Search component
 
 
 function UserHomeScreen() {
@@ -78,6 +80,7 @@ function UserHomeScreen() {
                         <p style={{ textAlign: "center" }}>No user data available</p>
                     )}
                 </div>
+                <Search /> {/* Add the Search component here */}
             </div>
         </>
     );

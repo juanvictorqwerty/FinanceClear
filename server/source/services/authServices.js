@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { pool } from '../config/database.js';
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET= "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147"; //will be moved to the dotenv
+const JWT_SECRET = process.env.JWT_SECRET || "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147";
 
 export const registerUser=async(user)=>{
     console.log('Registering user:', user);
