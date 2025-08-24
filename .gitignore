@@ -47,3 +47,4 @@ public/static/
 server/source/.env # Environment variables for the server
 
 server/source/*.json # Google credentials
+server/source/google-credentials.json
