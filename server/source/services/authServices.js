@@ -4,22 +4,33 @@ import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147";
 
-export const registerUser=async(user)=>{
+export const registerUser = async (user) => {
     console.log('Registering user:', user);
+    const connection = await pool.getConnection();
 
     try {
-        const hashedPassword = await bcrypt.hash(user.password, 10)
-        const registration_query= `INSERT INTO user(email, username, password,matricule) VALUES (?, ?, ?,?)`
-        const values = [user.userEmail, user.userName, hashedPassword,user.matricule];
+        await connection.beginTransaction();
 
-        await pool.query(registration_query, values)
-        return {success:true, message:"User saved successfully"}
-    } catch (error) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        const userQuery = `INSERT INTO user(email, username, password, matricule) VALUES (?, ?, ?, ?)`;
+        const userValues = [user.userEmail, user.userName, hashedPassword, user.matricule];
+        await connection.query(userQuery, userValues);
+
+        const profileQuery = `INSERT INTO profile(email, username) VALUES (?, ?)`;
+        const profileValues = [user.userEmail, user.userName];
+        await connection.query(profileQuery, profileValues);
+
+        await connection.commit();
+        return { success: true, message: "User saved successfully" };
+    } catch (error) { 
+        await connection.rollback();
         console.error('Registration error:', error);
         if (error.code === 'ER_DUP_ENTRY') {
-            return {success:false, message:"Account with the email or matricule already exists, try to log in"}
+            return { success: false, message: "Account with the email or matricule already exists, try to log in" };
         }
-        return {success:false, message:"Registration failed. Please try again."}
+        return { success: false, message: "Registration failed. Please try again." };
+    } finally {
+        connection.release();
     }
 }
 
