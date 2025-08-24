@@ -27,7 +27,7 @@ class GoogleSheetsService {
                 });
             }
 
-            this.sheets = google.sheets({ version: 'v4', auth: this.auth });
+            this.sheets = google.sheets({ version: 'v4', auth: this.auth, timeout: 30000 });
             console.log('Google Sheets API initialized successfully');
         } catch (error) {
             console.error('Error initializing Google Sheets API:', error);
@@ -346,8 +346,9 @@ class GoogleSheetsService {
         }
         return columnName;
     }
+}
 
 
 // Export a singleton instance
-const googleSheetsService = new GoogleSheetsService();
+var googleSheetsService = new GoogleSheetsService();
 export default googleSheetsService;

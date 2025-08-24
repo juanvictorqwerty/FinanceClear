@@ -218,7 +218,6 @@ export const batchReadSheetController = async (req, res) => {
 };
 
 /**
-<<<<<<< HEAD
  * Search for a value in a Google Sheet
  */
 export const searchSheetController = async (req, res) => {
@@ -245,8 +244,6 @@ export const searchSheetController = async (req, res) => {
 };
 
 /**
-=======
->>>>>>> 17777a2b8a27824643fb35bb198f88972a1dadd7
  * Get data from a specific sheet by name
  */
 export const readSheetByNameController = async (req, res) => {
