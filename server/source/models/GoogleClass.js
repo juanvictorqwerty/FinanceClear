@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { getUserProfileByUsername, getUsedReceiptsForUser, updateUserAndMarkReceipts } from '../services/profileServices.js';
 
 class GoogleSheetsServiceClass {
     constructor() {
@@ -338,104 +339,132 @@ class GoogleSheetsServiceClass {
     }
 
     /**
-    * Check multiple receipt IDs against a username in a Google Sheet.
-    * Assumes Receipt ID is in column 0 and Username is in column 1.
-    * @param {string} spreadsheetId - The ID of the spreadsheet
-    * @param {Array<string>} receiptIds - Array of receipt IDs to check
-    * @param {string} userName - The username to match against
-    * @returns {Promise<Object>} Result object with success status and details for each receipt
-    */
+     * Check receipt IDs against a user's account, validate payment against dues, and update financial status.
+     * Assumes Receipt ID is in column A (index 0), Payment Amount in column B (index 1), and Username in column C (index 2).
+     * @param {string} spreadsheetId - The ID of the spreadsheet
+     * @param {Array<string>} receiptIds - Array of receipt IDs to check
+     * @param {string} userName - The username to match against
+     * @returns {Promise<Object>} Result object with overall success status and details.
+     */
     async checkReceiptsAndUser(spreadsheetId, receiptIds, userName) {
         try {
             await this.ensureInitialized();
 
+            // 1. Get user's financial profile from DB
+            const profileResult = await getUserProfileByUsername(userName);
+            if (!profileResult.success) {
+                return { success: false, message: profileResult.message };
+            }
+            const { school_fee_due, penalty_fee, excess_fee } = profileResult.data;
+            const netAmountDue = Math.max(0, (school_fee_due || 0) + (penalty_fee || 0) - (excess_fee || 0));
+
+            // Debug log for netAmountDue
+            console.log(`[DEBUG] netAmountDue for user '${userName}':`, netAmountDue, { school_fee_due, penalty_fee, excess_fee });
+
+            if (netAmountDue === 0) {
+                return { success: true, message: "You have no outstanding balance." };
+            }
+
+            // 2. Get already used receipts for this user
+            const usedReceiptsResult = await getUsedReceiptsForUser(userName);
+            if (!usedReceiptsResult.success) {
+                return { success: false, message: usedReceiptsResult.message };
+            }
+            const usedReceiptsSet = new Set(usedReceiptsResult.data.map(r => r.receipt_id.toLowerCase()));
+
+            // 3. Read the Google Sheet (only the columns we need)
             const sheetName = 'Sheet1'; // Assuming the relevant sheet is 'Sheet1'
-            const infoResult = await this.getSpreadsheetInfo(spreadsheetId);
-            if (!infoResult.success) {
-                console.error('Error in checkReceiptsAndUser: Failed to get spreadsheet info', infoResult.message);
-                return infoResult;
-            }
-
-            const sheetInfo = infoResult.data.sheets.find(s => s.title === sheetName);
-            if (!sheetInfo) {
-                console.error('Error in checkReceiptsAndUser: Sheet not found', sheetName);
-                return {
-                    success: false,
-                    message: `Sheet with name '${sheetName}' not found.`
-                };
-            }
-
-            const columnCount = sheetInfo.gridProperties.columnCount;
-            const columnLetter = this._toColumnName(columnCount);
-            const range = `${sheetName}!A1:${columnLetter}`;
-
+            const range = `${sheetName}!A:C`;
             const readResult = await this.readSheet(spreadsheetId, range);
             if (!readResult.success) {
-                console.error('Error in checkReceiptsAndUser: Failed to read sheet', readResult.message);
                 return readResult;
             }
-
             const rows = readResult.data;
-            if (!rows || rows.length === 0) {
-                console.error('Error in checkReceiptsAndUser: Sheet is empty');
+            if (!rows || rows.length < 2) { // Sheet should have a header and at least one data row
                 return {
                     success: false,
-                    message: 'Sheet is empty or no data found'
+                    message: 'Sheet is empty or has no data.'
                 };
             }
 
-            const headerRow = rows[0];
-            const receiptIdColumnIndex = 0; // Column A
-            const usernameColumnIndex = 2; // Column C
+            // 4. Process provided receipt IDs
+            const receiptIdColumnIndex = 0;    // Column A
+            const paymentAmountColumnIndex = 1; // Column B
+            const usernameColumnIndex = 2;      // Column C
 
-            if (headerRow.length < Math.max(receiptIdColumnIndex, usernameColumnIndex) + 1) {
-                console.error('Error in checkReceiptsAndUser: Required columns not found', headerRow);
-                return {
-                    success: false,
-                    message: 'Required columns (Payment_ID, Name) not found in the sheet header.'
-                };
-            }
+            let totalPaymentFromNewReceipts = 0;
+            const validReceiptsToMarkAsUsed = [];
+            const processingDetails = [];
 
-            const results = [];
-            let allMatched = true;
+            // Create a Map for efficient lookups of receipt data from the sheet
+            const sheetDataMap = new Map(rows.slice(1).map(row => [row[receiptIdColumnIndex]?.toLowerCase(), row]));
 
             for (const receiptId of receiptIds) {
-                let foundAndMatched = false;
-                for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header
-                    const row = rows[i];
-                    const currentReceiptId = row[receiptIdColumnIndex];
-                    const currentUsername = row[usernameColumnIndex];
+                const lowerCaseReceiptId = receiptId.toLowerCase();
 
-                    if (currentReceiptId && currentReceiptId.toLowerCase() === receiptId.toLowerCase()) {
-                        if (currentUsername && currentUsername.toLowerCase() === userName.toLowerCase()) {
-                            results.push({ receiptId, status: 'matched', message: 'Receipt ID and username matched.' });
-                            foundAndMatched = true;
-                            break; // Found a match for this receiptId, move to next
-                        } else {
-                            results.push({ receiptId, status: 'mismatched_username', message: 'Receipt ID found, but username mismatched.' });
-                            foundAndMatched = true; // Still found the receipt ID
-                            allMatched = false;
-                            break;
-                        }
-                    }
+                if (usedReceiptsSet.has(lowerCaseReceiptId)) {
+                    processingDetails.push({ receiptId, status: 'already_used', message: 'This receipt has already been used.' });
+                    continue;
                 }
-                if (!foundAndMatched) {
-                    results.push({ receiptId, status: 'not_found', message: 'Receipt ID not found.' });
-                    allMatched = false;
+
+                const rowData = sheetDataMap.get(lowerCaseReceiptId);
+                if (!rowData) {
+                    processingDetails.push({ receiptId, status: 'not_found', message: 'Receipt ID not found in the sheet.' });
+                    continue;
                 }
+
+                const sheetUsername = rowData[usernameColumnIndex];
+                if (!sheetUsername || sheetUsername.toLowerCase() !== userName.toLowerCase()) {
+                    processingDetails.push({ receiptId, status: 'mismatched_username', message: 'Receipt ID found, but username does not match.' });
+                    continue;
+                }
+
+                const paymentAmount = parseFloat(rowData[paymentAmountColumnIndex]);
+                if (isNaN(paymentAmount) || paymentAmount <= 0) {
+                    processingDetails.push({ receiptId, status: 'invalid_amount', message: 'Payment amount is invalid or zero.' });
+                    continue;
+                }
+
+                totalPaymentFromNewReceipts += paymentAmount;
+                validReceiptsToMarkAsUsed.push(receiptId);
+                processingDetails.push({ receiptId, status: 'matched', message: `Receipt validated with amount: ${paymentAmount}.` });
+            }
+
+            // Debug log for totalPaymentFromNewReceipts
+            console.log(`[DEBUG] totalPaymentFromNewReceipts for user '${userName}':`, totalPaymentFromNewReceipts, { validReceiptsToMarkAsUsed, processingDetails });
+
+            // 5. Final validation and DB update
+            if (totalPaymentFromNewReceipts < netAmountDue) {
+                return {
+                    success: false,
+                    message: `Insufficient payment. Amount due is ${netAmountDue}, but total from valid new receipts is only ${totalPaymentFromNewReceipts}.`,
+                    details: processingDetails
+                };
+            }
+
+            // Success! Payment is sufficient. Update DB.
+            const newExcessFee = totalPaymentFromNewReceipts - netAmountDue;
+            const transactionResult = await updateUserAndMarkReceipts(userName, newExcessFee, validReceiptsToMarkAsUsed);
+
+            if (!transactionResult.success) {
+                return {
+                    success: false,
+                    message: `Payment confirmed, but a server error occurred while updating your financial status. Please contact administration. Error: ${transactionResult.message}`,
+                    details: processingDetails
+                };
             }
 
             return {
-                success: allMatched,
-                message: allMatched ? 'All receipts processed successfully.' : 'Some receipts could not be verified.',
-                details: results
+                success: true,
+                message: "Your payment is approved",
+                details: processingDetails
             };
 
         } catch (error) {
             console.error(`Error checking receipts for user '${userName}' in spreadsheet '${spreadsheetId}':`, error);
             return {
                 success: false,
-                message: `Failed to check receipts for user '${userName}'.`,
+                message: `An unexpected error occurred while checking receipts.`,
                 error: error.message
             };
         }

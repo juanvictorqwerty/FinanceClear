@@ -297,13 +297,13 @@ export const checkReceiptsController = async (req, res) => {
         if (results.success) {
             return res.status(200).json({
                 success: true,
-                message: 'All receipts checked successfully',
+                message: results.message || 'All receipts checked successfully',
                 details: results.details
             });
         } else {
             return res.status(400).json({
                 success: false,
-                message: 'Some receipts could not be verified or matched with the username',
+                message: results.message || 'Some receipts could not be verified or matched with the username',
                 details: results.details
             });
         }
