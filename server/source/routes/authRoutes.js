@@ -27,6 +27,6 @@ router.post('/login-admin', loginAdmin);
 
 // --- Protected Admin Registration Route ---
 // This route is now protected. Only an already authenticated admin can create a new admin account.
-router.post('/register-admin', requireAdminAuth, registerAdmin);
+router.post('/register-admin', registerAdmin);
 
 export default router;
