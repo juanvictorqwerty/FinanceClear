@@ -18,7 +18,7 @@ const Header = () => {
             <div className="navbar-logo">
                 <i className="fas fa-briefcase logo-icon"></i>
                 <span className="logo-text">
-                    {isLoggedIn && user ? `Welcome ${user.userName || user.name || ''}` : 'Welcome'}
+                    Welcome
                 </span>
             </div>
 

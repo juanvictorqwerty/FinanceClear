@@ -32,17 +32,9 @@ const Search = () => {
             setShowAlert(true);
             return;
         }
-        const spreadsheetId = "1djogVeb0vT2Klqnx7HZfON-g1B3i4KV_5426ACNbHJs";
-        if (!spreadsheetId) {
-            setAlertMessage('Spreadsheet ID is not configured. Please set REACT_APP_GOOGLE_SHEET_ID in your .env file.');
-            setAlertType('error');
-            setShowAlert(true);
-            return;
-        }
         setIsLoading(true);
         try {
             const response = await axios.post('http://localhost:5000/api/sheets/check-receipts', {
-                spreadsheetId,
                 receiptIds: filteredIds,
                 userName: username,
             });
