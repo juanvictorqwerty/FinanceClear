@@ -8,20 +8,26 @@ import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const AdminLoginScreen = () => {
     const navigate = useNavigate();
-    const { login, isLoggedIn, logout } = useAuth(); // Use the useAuth hook
+    // Use adminLogin from context, and check if an admin is already logged in.
+    const { adminLogin, isAdminLoggedIn } = useAuth();
     const [formValues, setFormValues] = React.useState({
         userEmail: '',
         password: '',
     });
     const [showAlert, setShowAlert] = React.useState(false);
     const [emailError, setEmailError] = React.useState('');
-    const [isLoading, setIsLoading] = useState(true); // For initial loading state
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true); // For auto-login check
+    const [isLoading, setIsLoading] = useState(false); // Only for form submission loading state
+
+    // Redirect if admin is already logged in
+    useEffect(() => {
+        if (isAdminLoggedIn) {
+            navigate('/admin');
+        }
+    }, [isAdminLoggedIn, navigate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        const trimmedValue = name === 'password' ? value : value.trim();
-        setFormValues({ ...formValues, [name]: trimmedValue });
+        setFormValues({ ...formValues, [name]: value });
         setShowAlert(false);
         setEmailError('');
     };
@@ -40,47 +46,36 @@ const AdminLoginScreen = () => {
             return;
         }
 
+        setIsLoading(true);
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/login-user", {
+            // Point to the admin login endpoint
+            const response = await axios.post("http://localhost:5000/api/auth/login-admin", {
                 userEmail: formValues.userEmail,
                 password: formValues.password
             });
 
             if (response.data.success) {
-                toast.success(response.data.message || "Login Successful");
-                // Use the login function from AuthContext
-                login(response.data.user, response.data.token);
-                navigate('/Home');
+                toast.success(response.data.message || "Admin Login Successful");
+                // Use the adminLogin function from AuthContext
+                adminLogin(response.data.user, response.data.token);
+                // Redirect to the admin dashboard
+                navigate('/admin');
             } else {
                 toast.error(response.data.message || "Login Failed");
             }
         } catch (error) {
-            console.log("error", error.response.data);
-            toast.error(error.response.data.message || "Something went wrong");
+            console.log("error", error.response?.data);
+            toast.error(error.response?.data?.message || "Something went wrong");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     
     const isEmailValid = (email) => {
+        // Assuming admins also use ICTU emails. Adjust if necessary.
         return /^[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm$/.test(email);
     };
-
-    if (isLoading || isCheckingAuth) {
-        return (
-            <div className="login-wrapper">
-                <div className="loading-container">
-                    <img
-                        src="/logo.png"
-                        alt="FiClear logo"
-                        className="logo"
-                        style={{ width: '120px', height: 'auto', marginBottom: '20px' }}
-                    />
-                    <h2>Checking authentication...</h2>
-                    <div className="spinner"></div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="login-wrapper">
@@ -90,7 +85,7 @@ const AdminLoginScreen = () => {
                         {emailError}
                     </div>
                 )}
-                <h1>Login</h1>
+                <h1>Admin Login</h1>
                 <img
                     src="/logo.png"
                     alt="FiClear logo with stylized blue and green text, conveying a welcoming and professional tone"
@@ -107,15 +102,24 @@ const AdminLoginScreen = () => {
                         onChange={handleInputChange}
                         pattern="[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm"
                         title="Please enter a valid ICT University email address (e.g., example@ictuniversity.edu.cm)"
+                        disabled={isLoading}
                     />
                     <FaEnvelope className="icon" />
                 </div>
                 <div className="input-box">
-                    <input type="password" placeholder="Your ICTU password" required name="password" value={formValues.password} onChange={handleInputChange} />
+                    <input
+                        type="password"
+                        placeholder="Your ICTU password"
+                        required
+                        name="password"
+                        value={formValues.password}
+                        onChange={handleInputChange}
+                        disabled={isLoading}
+                    />
                     <FaLock className="icon" />
                 </div>
 
-                <button type="submit" className="btn">Login</button>
+                <button type="submit" className="btn" disabled={isLoading}>{isLoading ? 'Logging in...' : 'Login'}</button>
                 <div className="register-link">
                     <p>Or <Link to="/signIn">Register</Link></p>
                 </div>
