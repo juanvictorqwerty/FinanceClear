@@ -22,7 +22,7 @@ const createProfilesTableQuery = `
         school_fee_due INT DEFAULT 365000 CHECK (school_fee_due >= 0),
         penalty_fee INT DEFAULT 0 CHECK (penalty_fee >= 0) NOT NULL,
         excess_fee INT DEFAULT 0 CHECK (excess_fee >= 0) NOT NULL,
-        FOREIGN KEY (email) REFERENCES \`user\`(email)
+        FOREIGN KEY (email) REFERENCES \`user\`(email) ON UPDATE CASCADE
     )`;
 
 const createClearanceTableQuery = `
@@ -30,7 +30,7 @@ const createClearanceTableQuery = `
         clearance_id INT AUTO_INCREMENT PRIMARY KEY,
         receipt_user VARCHAR(255) NOT NULL,
         receipt_id VARCHAR(255) NOT NULL UNIQUE,
-        FOREIGN KEY (receipt_user) REFERENCES \`user\` (email)
+        FOREIGN KEY (receipt_user) REFERENCES \`user\` (email) ON UPDATE CASCADE
         )`;
     
 const createUsedUBA_receiptTableQuery = `
