@@ -46,8 +46,55 @@ export const updateUserAndMarkReceipts = async (username, newExcessFee, receiptI
     try {
         await connection.beginTransaction();
 
+        // 1. Get user's email from profile
+        const [profileRows] = await connection.query(`SELECT email, used_receipt FROM profile WHERE username = ?`, [username]);
+        if (profileRows.length === 0) {
+            throw new Error('User profile not found for updating receipts.');
+        }
+        const userEmail = profileRows[0].email;
+        let usedReceiptJson = [];
+        if (profileRows[0].used_receipt) {
+            try {
+                const parsed = JSON.parse(profileRows[0].used_receipt);
+                if (Array.isArray(parsed)) {
+                    usedReceiptJson = parsed;
+                } else if (parsed) {
+                    usedReceiptJson = [parsed];
+                }
+            } catch (e) {
+                // If parsing fails, start fresh
+                usedReceiptJson = [];
+            }
+        }
+
+        // 2. Insert into clearance table and get clearance_id
+        let clearanceId = null;
+        if (receiptIds && receiptIds.length > 0) {
+            // Insert one row for this clearance (could be one per receipt, but let's do one for the batch)
+            const [clearanceResult] = await connection.query(
+                `INSERT INTO clearance (receipt_user, receipt_id) VALUES (?, ?)`,
+                [userEmail, receiptIds.join(",")]
+            );
+            clearanceId = clearanceResult.insertId;
+        }
+
+        // 3. Update profile's used_receipt JSON field
+        if (clearanceId) {
+            usedReceiptJson.push({
+                clearance_id: clearanceId,
+                email: userEmail,
+                receipt_ids: receiptIds
+            });
+            await connection.query(
+                `UPDATE profile SET used_receipt = ? WHERE username = ?`,
+                [JSON.stringify(usedReceiptJson), username]
+            );
+        }
+
+        // 4. Update penalty and excess fee
         await connection.query(`UPDATE profile SET penalty_fee = 0, excess_fee = ? WHERE username = ?`, [newExcessFee, username]);
 
+        // 5. Insert into usedUBA_receipt as before
         if (receiptIds && receiptIds.length > 0) {
             const usedReceiptsQuery = `INSERT INTO usedUBA_receipt (receipt_id, receipt_user) VALUES ?`;
             const usedReceiptsValues = receiptIds.map(id => [id, username]);
