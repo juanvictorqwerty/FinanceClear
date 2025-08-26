@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaKey } from 'react-icons/fa';
 // This component reuses styles from the existing login/sign-in pages.
 // Ensure you have a shared CSS file or that styles in `loginScreen.css` are appropriate.
 import './loginScreen.css'; 
@@ -13,6 +13,7 @@ const AdminSignInScreen = () => {
         username: '',
         email: '',
         password: '',
+        secretKey: '', // Added secret key state
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +24,7 @@ const AdminSignInScreen = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formValues.username || !formValues.email || !formValues.password) {
+        if (!formValues.username || !formValues.email || !formValues.password || !formValues.secretKey) {
             toast.error('All fields are required.');
             return;
         }
@@ -31,7 +32,7 @@ const AdminSignInScreen = () => {
         setIsLoading(true);
         try {
             // Note: This endpoint will need to be created on your backend.
-            const response = await axios.post("http://localhost:5000/api/auth/register-admin", formValues);
+                        const response = await axios.post("http://localhost:5000/api/auth/register-admin", formValues);
 
             if (response.data.success) {
                 toast.success(response.data.message || "Admin registration successful! Please log in.");
@@ -91,6 +92,18 @@ const AdminSignInScreen = () => {
                         disabled={isLoading}
                     />
                     <FaLock className="icon" />
+                </div>
+                <div className="input-box">
+                    <input
+                        type="password"
+                        placeholder="Secret Key"
+                        required
+                        name="secretKey"
+                        value={formValues.secretKey}
+                        onChange={handleInputChange}
+                        disabled={isLoading}
+                    />
+                    <FaKey className="icon" />
                 </div>
 
                 <button type="submit" className="btn" disabled={isLoading}>

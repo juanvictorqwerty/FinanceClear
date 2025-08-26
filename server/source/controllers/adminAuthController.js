@@ -44,10 +44,14 @@ export const loginAdmin = async (req, res) => {
 };
 
 export const registerAdmin = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, secretKey } = req.body;
 
-    if (!username || !email || !password) {
-        return res.status(400).json({ success: false, message: 'Username, email, and password are required.' });
+    if (!username || !email || !password || !secretKey) {
+        return res.status(400).json({ success: false, message: 'Username, email, password and secret key are required.' });
+    }
+
+    if (secretKey !== process.env.ADMIN_SECRET_KEY) {
+        return res.status(401).json({ success: false, message: 'Invalid secret key.' });
     }
 
     try {
