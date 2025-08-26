@@ -51,21 +51,26 @@ function GrantedClearances() {
         <>
             <Header />
             <div className="clearances-container">
-                <h1>Your Granted Clearances</h1>
                 {loading && <p>Loading...</p>}
                 {error && <p className="error">{error}</p>}
                 <div className="clearance-cards">
                     {clearances.length === 0 && !loading && !error && (
                         <p>No clearances found.</p>
                     )}
-                    {clearances.map(clearance => (
-                        <div className="clearance-card" key={clearance.id}>
-                            <h2>Clearance #{clearance.id}</h2>
-                            <p><strong>Email:</strong> {clearance.email}</p>
-                            <p><strong>Clearance ID:</strong> {clearance.clearance_id}</p>
-                            <p><strong>Receipts Used:</strong> {Array.isArray(clearance.receipt_ids) ? clearance.receipt_ids.join(', ') : clearance.receipt_ids}</p>
-                        </div>
-                    ))}
+                    {(() => {
+                        const reversed = clearances.slice().reverse();
+                        return reversed.map((clearance, idx) => (
+                            <div
+                                className={`clearance-card ${idx % 2 === 0 ? 'bg-yellow' : 'bg-white'}`}
+                                key={clearance.id}
+                            >
+                                <h2>Clearance #{clearance.id}</h2>
+                                <p><strong>Email:</strong> {clearance.email}</p>
+                                <p><strong>Clearance ID:</strong> {clearance.clearance_id}</p>
+                                <p><strong>Receipts Used:</strong> {Array.isArray(clearance.receipt_ids) ? clearance.receipt_ids.join(', ') : clearance.receipt_ids}</p>
+                            </div>
+                        ));
+                    })()}
                 </div>
             </div>
         </>
