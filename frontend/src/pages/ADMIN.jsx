@@ -57,7 +57,19 @@ function Admin() {
     }, [activeTab]);
 
     return (
-        <div>
+        <div style={{ position: 'relative' }}>
+            <div style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+            }}>
+                <button
+                    onClick={() => { /* Implement logout logic here */ alert('Logout clicked!'); }}
+                    style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
+                >
+                    Logout
+                </button>
+            </div>
             <h1 style={{textAlign:'center',marginTop:24}}>Admin Dashboard</h1>
             <AdminPanel
                 users={users}
