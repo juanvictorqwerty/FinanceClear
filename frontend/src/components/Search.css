@@ -35,33 +35,96 @@
     margin-bottom: 20px;
 }
 
-.search-bar {
+
+.modern-bar {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    align-items: stretch;
 }
 
-.search-bar textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+.receipt-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1.5px solid #bdbdbd;
+    border-radius: 6px;
     font-size: 16px;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    transition: border-color 0.2s;
+    background: #fff;
+    outline: none;
+}
+.receipt-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px #e3f0ff;
 }
 
-.search-bar button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
+.add-btn, .remove-btn {
+    background: #f5f5f5;
+    border: 1.5px solid #bdbdbd;
+    color: #333;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 16px;
+    transition: background 0.2s, border-color 0.2s;
+    margin-left: 2px;
+}
+.add-btn:hover, .remove-btn:hover {
+    background: #e3f0ff;
+    border-color: #007bff;
+}
+.add-btn:disabled, .remove-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.search-bar button:hover {
-    background-color: #0056b3;
+.search-btn {
+    margin-top: 10px;
+    padding: 12px 0;
+    background: linear-gradient(90deg, #007bff 60%, #0056b3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: background 0.2s;
+    position: relative;
+}
+.search-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.search-btn:hover:not(:disabled) {
+    background: linear-gradient(90deg, #0056b3 60%, #007bff 100%);
+}
+
+/* Loader animation */
+.loader {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border: 3px solid #fff;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .search-results {
