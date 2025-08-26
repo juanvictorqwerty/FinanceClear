@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { FaUser, FaEnvelope, FaLock, FaKey } from 'react-icons/fa';
 // This component reuses styles from the existing login/sign-in pages.
 // Ensure you have a shared CSS file or that styles in `loginScreen.css` are appropriate.
-import './loginScreen.css'; 
+import './signInScreen.css'; 
 
 const AdminSignInScreen = () => {
     const navigate = useNavigate();
