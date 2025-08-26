@@ -19,9 +19,9 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     return <Navigate to="/" replace />;
   }
 
-  if (adminOnly && (!user || !user.isAdmin)) { // Assuming user object has an isAdmin property
-    return <Navigate to="/" replace />;
-  }
+  // if (adminOnly && (!user || !user.isAdmin)) { // Assuming user object has an isAdmin property
+  //   return <Navigate to="/" replace />;
+  // }
 
   return children;
 };
@@ -37,7 +37,10 @@ function App() {
               <Route path="/signIn" element={<SignInScreen />} />
               <Route path="/Check user" element={<ProtectedRoute><CheckUser /></ProtectedRoute>} />
               <Route path= "/Home" element={<ProtectedRoute><UserHomeScreen/></ProtectedRoute>} />
+              {/* Admin route
               <Route path="/admin" element={<ProtectedRoute adminOnly={true}><Admin /></ProtectedRoute>} />
+              */}
+              <Route path="/admin" element={<Admin />} />
               <Route path="/clearances" element={<ProtectedRoute><Clearances/></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
