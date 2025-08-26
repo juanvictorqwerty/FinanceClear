@@ -55,17 +55,28 @@ export const updateUserAndMarkReceipts = async (username, newExcessFee, receiptI
         let usedReceiptJson = [];
         if (profileRows[0].used_receipt) {
             try {
-                const parsed = JSON.parse(profileRows[0].used_receipt);
-                if (Array.isArray(parsed)) {
-                    usedReceiptJson = parsed;
-                } else if (parsed) {
-                    usedReceiptJson = [parsed];
+                let raw = profileRows[0].used_receipt;
+                if (Buffer.isBuffer(raw)) {
+                    raw = raw.toString('utf8');
+                }
+                if (typeof raw === 'string') {
+                    if (raw.trim().length > 0) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) {
+                            usedReceiptJson = parsed;
+                        } else if (parsed) {
+                            usedReceiptJson = [parsed];
+                        }
+                    }
+                } else if (Array.isArray(raw)) {
+                    usedReceiptJson = raw;
                 }
             } catch (e) {
                 // If parsing fails, start fresh
                 usedReceiptJson = [];
             }
         }
+        console.log('[DEBUG] usedReceiptJson before append:', JSON.stringify(usedReceiptJson));
 
         // 2. Insert into clearance table and get clearance_id
         let clearanceId = null;
@@ -78,21 +89,24 @@ export const updateUserAndMarkReceipts = async (username, newExcessFee, receiptI
             clearanceId = clearanceResult.insertId;
         }
 
-        // 3. Update profile's used_receipt JSON field
+        // 3 & 4. Update profile's used_receipt JSON field, penalty, and excess fee in one statement
         if (clearanceId) {
             usedReceiptJson.push({
+                id: clearanceId, // id matches clearance_id
                 clearance_id: clearanceId,
                 email: userEmail,
                 receipt_ids: receiptIds
             });
+            console.log('[DEBUG] usedReceiptJson after append:', JSON.stringify(usedReceiptJson));
             await connection.query(
-                `UPDATE profile SET used_receipt = ? WHERE username = ?`,
-                [JSON.stringify(usedReceiptJson), username]
+                `UPDATE profile SET used_receipt = ?, penalty_fee = 0, excess_fee = ? WHERE username = ?`,
+                [JSON.stringify(usedReceiptJson), newExcessFee, username]
             );
+            console.log('[DEBUG] Updated profile.used_receipt for', username);
+        } else {
+            // If no clearance, still update penalty/excess fee
+            await connection.query(`UPDATE profile SET penalty_fee = 0, excess_fee = ? WHERE username = ?`, [newExcessFee, username]);
         }
-
-        // 4. Update penalty and excess fee
-        await connection.query(`UPDATE profile SET penalty_fee = 0, excess_fee = ? WHERE username = ?`, [newExcessFee, username]);
 
         // 5. Insert into usedUBA_receipt as before
         if (receiptIds && receiptIds.length > 0) {

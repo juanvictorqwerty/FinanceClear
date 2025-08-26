@@ -7,6 +7,7 @@ import { createTableIfNotExists } from './utils/dbUtils.js';
 import authRoutes from './routes/authRoutes.js';
 import sheetsRoutes from './routes/sheetsRoutes.js';
 import { validateGoogleSheetsConfig } from './config/googleSheets.js';
+import profileRoutes from './routes/profileRoutes.js';
 
 dotenv.config() //import the environment
 
@@ -17,6 +18,8 @@ app.use(express.json()); //Middleware to parse JSON bodies
 app.use(cors()); //Middleware to enable CORS
 app.use('/api/users', userRoutes); //Mount user routes
 app.use('/api/auth',authRoutes);
+
+app.use('/api/profile', profileRoutes); // Mount profile routes
 app.use('/api/sheets', sheetsRoutes); //Mount Google Sheets routes
 
 app.listen(PORT, async () => {
