@@ -8,11 +8,17 @@ const Search = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertType, setAlertType] = useState(''); // 'success' or 'error'
+    const [processingDetails, setProcessingDetails] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useAuth(); // Use the useAuth hook
 
     const handleCheckReceipts = async () => {
         const filteredIds = receiptIds.map(id => id.trim()).filter(id => id !== '');
+        
+        // Reset alerts and details on each new check
+        setShowAlert(false);
+        setProcessingDetails([]);
+
         if (filteredIds.length === 0) {
             setAlertMessage('Please enter at least one receipt ID.');
             setAlertType('error');
@@ -40,13 +46,21 @@ const Search = () => {
                 receiptIds: filteredIds,
                 userName: username,
             });
+
+            // Always set the main message from the response
+            setAlertMessage(response.data.message || 'An unknown response was received from the server.');
+
             if (response.data.success) {
-                setAlertMessage('All receipts checked!');
                 setAlertType('success');
             } else {
-                setAlertMessage(response.data.message || 'Failed to check some receipts.');
                 setAlertType('error');
             }
+
+            // Set processing details if they exist in the response
+            if (response.data.details && Array.isArray(response.data.details)) {
+                setProcessingDetails(response.data.details);
+            }
+
             setShowAlert(true);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
@@ -118,7 +132,18 @@ const Search = () => {
                 </button>
             </div>
             {showAlert && (
-                <div className={`alert ${alertType}`}>{alertMessage}</div>
+                <div className={`alert ${alertType}`}>
+                    <p className="alert-message-main">{alertMessage}</p>
+                    {processingDetails.length > 0 && (
+                        <ul className="details-list">
+                            {processingDetails.map((detail, index) => (
+                                <li key={index} className={`detail-item status-${detail.status}`}>
+                                    <strong>Receipt {detail.receiptId}:</strong> {detail.message}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             )}
         </div>
     );
