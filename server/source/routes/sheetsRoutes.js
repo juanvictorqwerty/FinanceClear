@@ -9,7 +9,8 @@ import {
 
     readSheetByNameController,
     searchSheetController,
-    createSpreadsheetController
+    createSpreadsheetController,
+    checkReceiptsController
 } from '../controllers/sheetsController.js';
 
 const router = express.Router();
@@ -57,5 +58,9 @@ router.get('/search', searchSheetController);
 // Body: { title: string, sheetTitles?: Array<string> }
 router.post('/create', createSpreadsheetController);
 
+// Check multiple receipt IDs against a username
+// POST /api/sheets/check-receipts
+// Body: { spreadsheetId: string, receiptIds: Array<string>, username: string }
+router.post('/check-receipts', checkReceiptsController);
 
 export default router;

@@ -276,3 +276,43 @@ export const readSheetByNameController = async (req, res) => {
         });
     }
 };
+
+/**
+ * Check multiple receipt IDs against a username
+ */
+export const checkReceiptsController = async (req, res) => {
+    try {
+        const { spreadsheetId, receiptIds, userName } = req.body;
+
+        if (!spreadsheetId || !receiptIds || !Array.isArray(receiptIds) || receiptIds.length === 0 || !userName) {
+            return res.status(400).json({
+                success: false,
+                message: 'spreadsheetId, receiptIds (array), and userName are required'
+            });
+        }
+
+        // Assuming a new method in googleSheetsService to handle this logic
+        const results = await googleSheetsService.checkReceiptsAndUser(spreadsheetId, receiptIds, userName);
+
+        if (results.success) {
+            return res.status(200).json({
+                success: true,
+                message: 'All receipts checked successfully',
+                details: results.details
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'Some receipts could not be verified or matched with the username',
+                details: results.details
+            });
+        }
+
+    } catch (error) {
+        console.error('Check receipts controller error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error while checking receipts'
+        });
+    }
+};

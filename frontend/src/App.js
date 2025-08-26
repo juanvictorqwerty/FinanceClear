@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense} from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Lazy load all components
 const LoginScreen = lazy(() => import('./pages/loginScreen'));
@@ -11,26 +12,39 @@ const Admin = lazy(() => import('./pages/ADMIN'));
 const UserHomeScreen=lazy(()=>import('./pages/userHomeScreen'))
 const Clearances=lazy(()=>import('./pages/grantedClearances'))
 
-function App() {
-  const isLoggedIn = JSON.parse(localStorage.getItem("keepLoggedIn")) && localStorage.getItem("authToken");
-  const isAdmin=true;
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+  const { isLoggedIn, user } = useAuth();
 
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (adminOnly && (!user || !user.isAdmin)) { // Assuming user object has an isAdmin property
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+function App() {
   return ( // the ? should not be spaced
     <div className="App">
-      <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<LoginScreen />} />
-            <Route path="/signIn" element={<SignInScreen />} />
-            <Route path="/Check user" element={isLoggedIn?<CheckUser /> : <Navigate to={"/"}/> } />
-            <Route path= "/Home" element={isLoggedIn?<UserHomeScreen/> : <Navigate to={"/"}/> } />
-            <Route path="/admin" element={isAdmin?<Admin /> : <Navigate to={"/"} />} />
-            <Route path="/clearances" element={isLoggedIn?<Clearances/> : <Navigate to={"/"}/> } />
+      <AuthProvider>
+        <BrowserRouter>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<LoginScreen />} />
+              <Route path="/signIn" element={<SignInScreen />} />
+              <Route path="/Check user" element={<ProtectedRoute><CheckUser /></ProtectedRoute>} />
+              <Route path= "/Home" element={<ProtectedRoute><UserHomeScreen/></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute adminOnly={true}><Admin /></ProtectedRoute>} />
+              <Route path="/clearances" element={<ProtectedRoute><Clearances/></ProtectedRoute>} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
