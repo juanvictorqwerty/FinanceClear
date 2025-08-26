@@ -3,7 +3,7 @@ import { pool } from '../config/database.js';
 
 const createUsersTableQuery = `
     CREATE TABLE IF NOT EXISTS \`user\` (
-                email VARCHAR(255) PRIMARY KEY,
+        email VARCHAR(255) PRIMARY KEY,
         username VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         matricule VARCHAR(255) UNIQUE,
@@ -26,18 +26,28 @@ const createProfilesTableQuery = `
         FOREIGN KEY (username) REFERENCES \`user\`(username)
     )`;
 
+const createClearanceTableQuery = `
+    CREATE TABLE IF NOT EXISTS \`clearance\` (
+        clearance_id INT AUTO_INCREMENT PRIMARY KEY,
+        receipt_user VARCHAR(255) NOT NULL,
+        receipt_id VARCHAR(255) NOT NULL UNIQUE,
+        FOREIGN KEY (receipt_user) REFERENCES \`user\` (email)
+        )`;
+    
 const createUsedUBA_receiptTableQuery = `
     CREATE TABLE IF NOT EXISTS \`usedUBA_receipt\` (
-        receipt_id VARCHAR(255) PRIMARY KEY,
-        receipt_user VARCHAR(255) NOT NULL,
-        receipt_used_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
+            receipt_id VARCHAR(255) PRIMARY KEY,
+            receipt_user VARCHAR(255) NOT NULL,
+            receipt_used_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`;
+
 
 async function createTableIfNotExists() {
     try {
         await pool.query(createUsersTableQuery);
         await pool.query(createProfilesTableQuery);
         await pool.query(createUsedUBA_receiptTableQuery);
+        await pool.query(createClearanceTableQuery);
         console.log('Database tables checked/created successfully.');
     } catch (error) {
         console.error('Error creating tables:', error);
