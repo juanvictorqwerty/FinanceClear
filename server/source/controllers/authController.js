@@ -1,64 +1,70 @@
-import { registerUser, loginUser, getUserToken } from "../services/authServices.js";
+import * as authService from "../services/authServices.js";
 
-export const registerUsersController= async(request, front_res)=>{ 
-    const {userEmail, userName, password,matricule} = request.body; //registration info the user sent
-    
-    if(!userEmail || !userName || !password){
-        return front_res.status(400).json({
-            success: false, 
-            message: "All fields are required"
+export const registerUser = async (req, res) => {
+    // Use standard naming (email, username) for consistency with frontend
+    const { email, username, password, matricule } = req.body;
+
+    if (!email || !username || !password) {
+        return res.status(400).json({
+            success: false,
+            message: "Email, username, and password are required."
         });
     }
 
-    const user = {
-        userEmail: userEmail,
-        userName: userName,
-        password: password,
-        matricule: matricule
-    };
+    // Pass user data directly to the service
+    const user = { email, username, password, matricule };
 
     try {
-        const response = await registerUser(user);
-        return front_res.status(response.success ? 200 : 400).json(response);
+        const response = await authService.registerUser(user);
+        // Use 201 (Created) for successful registration
+        return res.status(response.success ? 201 : 400).json(response);
     } catch (error) {
         console.error('Registration controller error:', error);
-        return front_res.status(500).json({
-            success: false, 
-            message: "Registration failed. Please try again later."
+        return res.status(500).json({
+            success: false,
+            message: "An internal error occurred during registration."
         });
     }
-}
+};
 
-export const loginUserController= async(request,front_res)=>{
-    const {userEmail, password} = request.body;
-    if (!userEmail || !password){
-        return front_res.status(400).json({success:false,message:"All fields are required"});
-    }
-    try{
-        const response = await loginUser(userEmail, password);
-        return front_res.status(response.success ? 200 : 400).json(response);
-    } catch (error){
-        console.error('Login controller error:', error);
-        return front_res.status(500).json({
-            success: false, 
-            message: "Login failed. Please try again later."
-        });
-    }
-}
-export const getUserFromToken = async (request, front_res) => {
-    const token = request.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return front_res.status(400).json({ success: false, message: "Token not provided" });
+export const loginUser = async (req, res) => {
+    const { userEmail, password } = req.body; // Frontend sends userEmail
+    if (!userEmail || !password) {
+        return res.status(400).json({ success: false, message: "Email and password are required." });
     }
     try {
-        const response = await getUserToken(token);
+        const response = await authService.loginUser(userEmail, password);
         if (response.success) {
-            return front_res.status(200).json(response);
+            return res.status(200).json(response);
         } else {
-            return front_res.status(400).json(response);
+            // Use 401 (Unauthorized) for failed login attempts
+            return res.status(401).json(response);
         }
     } catch (error) {
-        console.error('Get user from token error:', error);
-        return front_res.status(500).json({ success: false, message: "Login Failed" });
+        console.error('Login controller error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "An internal error occurred during login."
+        });
     }
-}
+};
+
+export const getUserByToken = async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: "Authorization token not provided." });
+    }
+
+    try {
+        const response = await authService.getUserToken(token);
+        return res.status(response.success ? 200 : 401).json(response);
+    } catch (error) {
+        console.error('Get user from token error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to validate token."
+        });
+    }
+};

@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import sheetsRoutes from './routes/sheetsRoutes.js';
 import { validateGoogleSheetsConfig } from './config/googleSheets.js';
 import profileRoutes from './routes/profileRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config() //import the environment
 
@@ -21,6 +22,9 @@ app.use('/api/auth',authRoutes);
 
 app.use('/api/profile', profileRoutes); // Mount profile routes
 app.use('/api/sheets', sheetsRoutes); //Mount Google Sheets routes
+
+// Admin endpoints
+app.use('/api/admin', adminRoutes);
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);

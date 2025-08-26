@@ -1,9 +1,76 @@
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
+import AdminPanel from '../components/AdminPanel';
+
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000/api/admin';
 
 function Admin() {
+    const [activeTab, setActiveTab] = useState('users');
+    const [users, setUsers] = useState([]);
+    const [profiles, setProfiles] = useState([]);
+    const [clearances, setClearances] = useState([]);
+    const [useduba, setUseduba] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Fetch all data for a tab
+    const fetchData = async (tab) => {
+        setLoading(true);
+        let url = `${API_BASE}/${tab}`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.success) {
+                if (tab === 'users') setUsers(data.data);
+                if (tab === 'profiles') setProfiles(data.data);
+                if (tab === 'clearances') setClearances(data.data);
+                if (tab === 'useduba') setUseduba(data.data);
+            }
+        } catch (e) {
+            // handle error
+        }
+        setLoading(false);
+    };
+
+    // Search for a tab
+    const handleSearch = async (tab, term) => {
+        setLoading(true);
+        let url = `${API_BASE}/${tab}/search?q=${encodeURIComponent(term)}`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.success) {
+                if (tab === 'users') setUsers(data.data);
+                if (tab === 'profiles') setProfiles(data.data);
+                if (tab === 'clearances') setClearances(data.data);
+                if (tab === 'useduba') setUseduba(data.data);
+            }
+        } catch (e) {
+            // handle error
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchData(activeTab);
+        // eslint-disable-next-line
+    }, [activeTab]);
+
     return (
         <div>
-        <h1>This is the admin page</h1>
+            <h1 style={{textAlign:'center',marginTop:24}}>Admin Dashboard</h1>
+            <AdminPanel
+                users={users}
+                profiles={profiles}
+                clearances={clearances}
+                useduba={useduba}
+                onSearch={handleSearch}
+                loading={loading}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+            />
         </div>
     );
 }
