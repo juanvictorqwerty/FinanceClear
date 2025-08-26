@@ -22,7 +22,7 @@ const createProfilesTableQuery = `
         school_fee_due INT DEFAULT 365000 CHECK (school_fee_due >= 0),
         penalty_fee INT DEFAULT 0 CHECK (penalty_fee >= 0) NOT NULL,
         excess_fee INT DEFAULT 0 CHECK (excess_fee >= 0) NOT NULL,
-        FOREIGN KEY (email) REFERENCES \`user\`(email)
+        FOREIGN KEY (email) REFERENCES \`user\`(email),
         FOREIGN KEY (username) REFERENCES \`user\`(username)
     )`;
 

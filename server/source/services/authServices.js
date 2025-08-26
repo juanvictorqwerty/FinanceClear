@@ -36,7 +36,7 @@ export const registerUser = async (user) => {
 
 export const loginUser = async(userEmail,password)=>{
     try{
-        const [rows] = await pool.query(`SELECT * FROM user WHERE email = ?`,[userEmail]);
+        const [rows] = await pool.query(`SELECT email, username, matricule, password FROM user WHERE email = ?`,[userEmail]);
         if (rows.length === 0){
             return{success:false,message:"Invalid email or password"}
         }
@@ -53,7 +53,12 @@ export const loginUser = async(userEmail,password)=>{
         return{
             success:true,
             message:'Login Successful',
-            token:token
+            token:token,
+            user: { // Include user data
+                email: user.email,
+                username: user.username,
+                matricule: user.matricule
+            }
         }
 
     } catch (error){
