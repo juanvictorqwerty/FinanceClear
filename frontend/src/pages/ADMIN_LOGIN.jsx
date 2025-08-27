@@ -121,7 +121,7 @@ const AdminLoginScreen = () => {
 
                 <button type="submit" className="btn" disabled={isLoading}>{isLoading ? 'Logging in...' : 'Login'}</button>
                 <div className="register-link">
-                    <p>Or <Link to="/signIn">Register</Link></p>
+                    <p>Or <Link to="/admin-signIn">Register</Link></p>
                 </div>
             </form>
         </div>
