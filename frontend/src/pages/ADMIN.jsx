@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import AdminPanel from '../components/AdminPanel';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000/api/admin';
 
@@ -12,6 +14,13 @@ function Admin() {
     const [useduba, setUseduba] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const { adminLogout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        adminLogout();
+        navigate('/admin/login');
+    };
 
     // Fetch all data for a tab
     const fetchData = async (tab) => {
@@ -64,7 +73,7 @@ function Admin() {
                 right: '20px',
             }}>
                 <button
-                    onClick={() => { /* Implement logout logic here */ alert('Logout clicked!'); }}
+                    onClick={handleLogout}
                     style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
                 >
                     Logout
