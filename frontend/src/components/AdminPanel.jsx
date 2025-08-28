@@ -121,6 +121,7 @@ function AdminPanel({
   onSearch, loading, activeTab, setActiveTab, searchTerm, setSearchTerm
 }) {
   const [editModal, setEditModal] = useState({ open: false, fields: [], values: {}, onSave: null, title: '' });
+  const [addClearanceModal, setAddClearanceModal] = useState({ open: false, fields: [], values: {}, onSave: null, title: '' });
   const [confirm, setConfirm] = useState({ open: false, onConfirm: null, message: '' });
   const [editRow, setEditRow] = useState(null);
   const [editType, setEditType] = useState('');
@@ -216,9 +217,44 @@ function AdminPanel({
     });
   };
 
+  const handleAddClearance = () => {
+    setAddClearanceModal({
+        open: true,
+        title: 'Add New Clearance',
+        fields: [
+            { name: 'userEmail', label: 'User Email', required: true, type: 'email' },
+        ],
+        values: {},
+        onSave: async (form) => {
+            setAddClearanceModal(m => ({ ...m, open: false }));
+
+            setConfirm({
+                open: true,
+                message: `Are you sure you want to add this clearance to ${form.userEmail}?`,
+                onConfirm: async () => {
+                    setConfirm(c => ({ ...c, open: false }));
+                    const res = await fetch(`${API_BASE}/clearances`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userEmail: form.userEmail })
+                    });
+                    if (res.ok) {
+                        onSearch('clearances', ''); // Refresh clearances
+                        onSearch('profiles', ''); // Refresh profiles to show updated used_receipt
+                    } else {
+                        const errorData = await res.json();
+                        alert(`Error: ${errorData.message}`);
+                    }
+                }
+            });
+        }
+    });
+};
+
   return (
     <div className="admin-panel">
       <EditModal {...editModal} onClose={() => setEditModal(m => ({ ...m, open: false }))} />
+      <EditModal {...addClearanceModal} onClose={() => setAddClearanceModal(m => ({ ...m, open: false }))} />
       <ConfirmDialog {...confirm} onCancel={() => setConfirm(c => ({ ...c, open: false }))} />
       <div className="admin-tabs">
         {TABS.map(tab => (
@@ -241,6 +277,11 @@ function AdminPanel({
         <button onClick={() => onSearch(activeTab, searchTerm)} disabled={loading}>
           Search
         </button>
+        {activeTab === 'clearances' && (
+            <button onClick={handleAddClearance} disabled={loading}>
+                Add Clearance
+            </button>
+        )}
       </div>
       <div className="admin-table-container">
         {loading ? <div className="admin-loading">Loading...</div> : (

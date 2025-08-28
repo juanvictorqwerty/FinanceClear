@@ -62,3 +62,23 @@ export const searchUsedUBAReceiptsController = async (req, res) => {
     if (result.success) return res.json(result);
     return res.status(500).json(result);
 };
+
+// Add a clearance to a user's profile
+export const addClearanceController = async (req, res) => {
+    const { userEmail } = req.body;
+
+    if (!userEmail) {
+        return res.status(400).json({ success: false, message: "User email is required." });
+    }
+
+    const result = await clearanceAdmin.addClearanceToProfile(userEmail);
+    if (result.success) {
+        return res.json(result);
+    }
+
+    if (result.message.includes("not found")) {
+        return res.status(404).json(result);
+    }
+
+    return res.status(500).json(result);
+};

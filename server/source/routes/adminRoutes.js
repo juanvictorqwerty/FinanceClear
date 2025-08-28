@@ -7,7 +7,8 @@ import {
     getAllClearancesController,
     searchClearancesController,
     getAllUsedUBAReceiptsController,
-    searchUsedUBAReceiptsController
+    searchUsedUBAReceiptsController,
+    addClearanceController
 } from '../controllers/adminController.js';
 import {
     updateUserEmailUsernameController,
@@ -27,6 +28,7 @@ router.get('/profiles/search', searchProfilesController);
 // Clearances
 router.get('/clearances', getAllClearancesController);
 router.get('/clearances/search', searchClearancesController);
+router.post('/clearances', addClearanceController);
 
 // UsedUBA_receipt
 router.get('/useduba', getAllUsedUBAReceiptsController);
@@ -37,3 +39,4 @@ router.put('/user/edit', updateUserEmailUsernameController); // expects {oldEmai
 router.put('/profile/fees', updateProfileFeesController); // expects {username, school_fee_due, penalty_fee, excess_fee}
 
 export default router;
+
