@@ -32,7 +32,7 @@ function Admin() {
             if (data.success) {
                 if (tab === 'users') setUsers(data.data);
                 if (tab === 'profiles') setProfiles(data.data);
-                if (tab === 'clearances') setClearances(data.data);
+                if (tab === 'clearances') setClearances(data.data.reverse());
                 if (tab === 'useduba') setUseduba(data.data);
             }
         } catch (e) {
@@ -51,7 +51,7 @@ function Admin() {
             if (data.success) {
                 if (tab === 'users') setUsers(data.data);
                 if (tab === 'profiles') setProfiles(data.data);
-                if (tab === 'clearances') setClearances(data.data);
+                if (tab === 'clearances') setClearances(data.data.reverse());
                 if (tab === 'useduba') setUseduba(data.data);
             }
         } catch (e) {
