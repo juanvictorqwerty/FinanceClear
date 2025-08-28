@@ -61,7 +61,7 @@ export const addClearanceToProfile = async (userEmail) => {
         }
 
         // 2. Insert into clearance table and get clearance_id
-        const receiptIdString = "added by Admin";
+        const receiptIdString = "added by Admin_" + Date.now(); // MODIFIED LINE
         const [clearanceResult] = await connection.query(
             `INSERT INTO clearance (receipt_user, receipt_id) VALUES (?, ?)`,
             [userEmail, receiptIdString]
