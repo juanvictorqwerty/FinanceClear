@@ -62,6 +62,8 @@ const AdminLoginScreen = () => {
                 navigate('/admin');
             } else {
                 toast.error(response.data.message || "Login Failed");
+                setEmailError(response.data.message || "Login Failed");
+                setShowAlert(true);
             }
         } catch (error) {
             console.log("error", error.response?.data);
