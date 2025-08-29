@@ -35,7 +35,7 @@ const LoginScreen = () => {
         }
 
         if (formValues.password.length === 0) {
-            setEmailError('Please enter a password.');
+            setEmailError('Password cannot be empty.');
             setShowAlert(true);
             return;
         }
@@ -52,11 +52,14 @@ const LoginScreen = () => {
                 login(response.data.user, response.data.token);
                 navigate('/Home');
             } else {
-                toast.error(response.data.message || "Login Failed");
+                setEmailError(response.data.message || "Login Failed");
+                setShowAlert(true);
+                toast.error(response.data.message || "Login Failed", { autoClose: 10000 });
             }
         } catch (error) {
-            console.log("error", error.response.data);
-            toast.error(error.response.data.message || "Something went wrong");
+            setEmailError(error.response.data.message || "Something went wrong");
+            setShowAlert(true);
+            toast.error(error.response.data.message || "Something went wrong", { autoClose: 10000 });
         }
     };
 
