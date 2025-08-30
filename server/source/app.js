@@ -31,14 +31,7 @@ const allowedOrigins = [
 ].filter(Boolean); // This removes any falsy values if FRONTEND_URL is not set.
 
 const corsOptions = {
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like Postman, mobile apps) or from our allowed list.
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: '*', // Allow all origins
     optionsSuccessStatus: 200 // For legacy browser support
 };
 
