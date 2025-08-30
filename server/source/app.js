@@ -9,8 +9,16 @@ import sheetsRoutes from './routes/sheetsRoutes.js';
 import { validateGoogleSheetsConfig } from './config/googleSheets.js';
 import profileRoutes from './routes/profileRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config() //import the environment
+// ES module-friendly way to get __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env file from the same directory as app.js
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
