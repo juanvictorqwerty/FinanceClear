@@ -51,7 +51,7 @@ server/source/*.json # Google credentials
 server/source/google-credentials.json
 
 frontend/.env.production
-frontend/.env.development
+
 
 
 # Local Netlify folder
