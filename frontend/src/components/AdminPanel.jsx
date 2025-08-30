@@ -136,7 +136,7 @@ function AdminPanel({
   };
 
   // Backend endpoints
-  const API_BASE = `${API_URL}/api/admin`;
+  const API_BASE = `${API_URL}/admin`;
 
   // Edit handlers
   const handleEditUser = (row) => {
