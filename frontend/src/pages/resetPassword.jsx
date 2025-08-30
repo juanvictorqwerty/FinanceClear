@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './resetPassword.css'; // Import the new CSS file
+import API_URL from '../apiConfig';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');
@@ -19,7 +20,7 @@ const ResetPassword = () => {
         const tokenFromUrl = searchParams.get('token');
         if (!tokenFromUrl) {
             toast.error('Invalid or missing reset token.');
-            navigate('/login');
+            navigate('/');
         }
         setToken(tokenFromUrl);
     }, [location, navigate]);
@@ -39,7 +40,7 @@ const ResetPassword = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/reset-password', {
+            const response = await axios.post(`${API_URL}/api/auth/reset-password`, {
                 token,
                 newPassword: password
             });

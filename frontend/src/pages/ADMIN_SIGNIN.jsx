@@ -6,6 +6,7 @@ import { FaUser, FaEnvelope, FaLock, FaKey } from 'react-icons/fa';
 // This component reuses styles from the existing login/sign-in pages.
 // Ensure you have a shared CSS file or that styles in `loginScreen.css` are appropriate.
 import './signInScreen.css'; 
+import API_URL from '../apiConfig';
 
 const AdminSignInScreen = () => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const AdminSignInScreen = () => {
         setIsLoading(true);
         try {
             // Note: This endpoint will need to be created on your backend.
-                        const response = await axios.post("http://localhost:5000/api/auth/register-admin", formValues);
+            const response = await axios.post(`${API_URL}/auth/register-admin`, formValues);
 
             if (response.data.success) {
                 toast.success(response.data.message || "Admin registration successful! Please log in.");

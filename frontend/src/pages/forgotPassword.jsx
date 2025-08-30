@@ -4,6 +4,7 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./forgotPassword.css"; // Import the CSS file
+import API_URL from '../apiConfig';
 
 function ForgotPassword() {
     const [userEmail, setEmail] = useState("");
@@ -25,7 +26,7 @@ function ForgotPassword() {
         setSuccess(""); // Clear previous success messages
         try {
             await axios.post(
-                "http://localhost:5000/api/auth/forgot-password",
+                `${API_URL}/api/auth/forgot-password`,
             {
                 userEmail,
             }

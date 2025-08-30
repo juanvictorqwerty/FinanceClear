@@ -4,6 +4,7 @@ import Header from '../components/header';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './grantedClearances.css';
+import API_URL from '../apiConfig';
 
 function GrantedClearances() {
     const { user } = useAuth();
@@ -20,7 +21,7 @@ function GrantedClearances() {
             }
             try {
                 // Fetch the profile with used_receipt JSON
-                const response = await axios.post('http://localhost:5000/api/profile/get-profile', {
+                const response = await axios.post(`${API_URL}/profile/get-profile`, {
                     username: user.username
                 });
                 console.log('API response:', response.data);
