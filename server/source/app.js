@@ -15,8 +15,15 @@ dotenv.config() //import the environment
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS configuration for better security
+const corsOptions = {
+    // Replace with your frontend's production URL when you deploy
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000', 
+    optionsSuccessStatus: 200 // For legacy browser support
+};
+
 app.use(express.json()); //Middleware to parse JSON bodies
-app.use(cors()); //Middleware to enable CORS
+app.use(cors(corsOptions)); //Middleware to enable CORS with specific options
 app.use('/api/users', userRoutes); //Mount user routes
 app.use('/api/auth',authRoutes);
 

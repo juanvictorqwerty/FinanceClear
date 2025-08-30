@@ -5,6 +5,8 @@ import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import API_URL from '../apiConfig';
+
 
 const AdminLoginScreen = () => {
     const navigate = useNavigate();
@@ -49,7 +51,7 @@ const AdminLoginScreen = () => {
         setIsLoading(true);
         try {
             // Point to the admin login endpoint
-            const response = await axios.post("http://localhost:5000/api/auth/login-admin", {
+            const response = await axios.post(`${API_URL}/auth/login-admin`, {
                 userEmail: formValues.userEmail,
                 password: formValues.password
             });

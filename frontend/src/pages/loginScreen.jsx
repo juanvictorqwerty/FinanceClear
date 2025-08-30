@@ -5,10 +5,11 @@ import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import API_URL from '../apiConfig';
 
 const LoginScreen = () => {
     const navigate = useNavigate();
-    const { login, isLoggedIn, logout } = useAuth(); // Use the useAuth hook
+    const { login, isLoggedIn} = useAuth(); // Use the useAuth hook
     const [formValues, setFormValues] = React.useState({
         userEmail: '',
         password: '',
@@ -41,7 +42,7 @@ const LoginScreen = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/login-user", {
+            const response = await axios.post(`${API_URL}/auth/login-user`, {
                 userEmail: formValues.userEmail,
                 password: formValues.password
             });

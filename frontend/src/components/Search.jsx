@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Search.css'; // Assuming you'll add some styles for the alert
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import API_URL from '../apiConfig';
 
 const Search = () => {
     const [receiptIds, setReceiptIds] = useState(['']);
@@ -34,7 +35,7 @@ const Search = () => {
         }
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/sheets/check-receipts', {
+            const response = await axios.post(`${API_URL}/sheets/check-receipts`, {
                 receiptIds: filteredIds,
                 userName: username,
             });

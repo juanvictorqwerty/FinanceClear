@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'; // Import useAuth
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user, isLoggedIn, logout } = useAuth(); // Use the useAuth hook
+    const {isLoggedIn, logout } = useAuth(); // Use the useAuth hook
 
     const handleLogout = () => {
         logout(); // Call the logout function from AuthContext

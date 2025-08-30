@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './AdminPanel.css';
+import API_URL from '../apiConfig';
+
 function ConfirmDialog({ open, onConfirm, onCancel, message }) {
   if (!open) return null;
   return (
@@ -134,7 +136,7 @@ function AdminPanel({
   };
 
   // Backend endpoints
-  const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000/api/admin';
+  const API_BASE = `${API_URL}/api/admin`;
 
   // Edit handlers
   const handleEditUser = (row) => {

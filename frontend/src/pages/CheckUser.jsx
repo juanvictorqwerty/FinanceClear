@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './CheckUser.css'; // Assumes CSS file exists
+import API_URL from '../apiConfig';
 
 function CheckUser() {
   const [username, setUsername] = useState('');
@@ -28,7 +29,7 @@ function CheckUser() {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5-second timeout
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/users/check_user?name=${encodeURIComponent(username)}`, {
+      const response = await fetch(`${API_URL}/users/check_user?name=${encodeURIComponent(username)}`, {
         signal: controller.signal,
       });
 

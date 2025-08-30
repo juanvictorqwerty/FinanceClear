@@ -4,6 +4,7 @@ import { FaUser } from 'react-icons/fa';
 import { FaLock } from 'react-icons/fa';
 import { FaEnvelope  } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+import API_URL from '../apiConfig';
 
 const SignInScreen = () => {
 const navigate = useNavigate();
@@ -80,9 +81,9 @@ const navigate = useNavigate();
         };
         
         try {
-            const API_URL = 'http://localhost:5000/api/auth/register-user';
+            const apiUrl = `${API_URL}/auth/register-user`;
             
-            const response = await fetch(API_URL, {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

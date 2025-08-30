@@ -3,8 +3,11 @@ import React, { useEffect, useState } from 'react';
 import AdminPanel from '../components/AdminPanel';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../apiConfig';
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000/api/admin';
+const API_BASE = `${API_URL}/admin`;
+
+
 
 function Admin() {
     const [activeTab, setActiveTab] = useState('users');
