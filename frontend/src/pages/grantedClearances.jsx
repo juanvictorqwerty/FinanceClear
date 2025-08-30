@@ -40,7 +40,7 @@ function GrantedClearances() {
                 console.log('Parsed used_receipt:', parsed);
                 setClearances(parsed);
             } catch (err) {
-                setError('Failed to fetch clearances.');
+                setError(err.response?.data?.message || 'Failed to fetch clearances.');
             } finally {
                 setLoading(false);
             }
@@ -58,20 +58,17 @@ function GrantedClearances() {
                     {clearances.length === 0 && !loading && !error && (
                         <p>No clearances found.</p>
                     )}
-                    {(() => {
-                        const reversed = clearances.slice().reverse();
-                        return reversed.map((clearance, idx) => (
-                            <div
-                                className={`clearance-card ${idx % 2 === 0 ? 'bg-yellow' : 'bg-white'}`}
-                                key={clearance.id}
-                            >
-                                <h2>Clearance #{clearance.id}</h2>
-                                <p><strong>Email:</strong> {clearance.email}</p>
-                                <p><strong>Clearance ID:</strong> {clearance.clearance_id}</p>
-                                <p><strong>Receipts Used:</strong> {Array.isArray(clearance.receipt_ids) ? clearance.receipt_ids.join(', ') : clearance.receipt_ids}</p>
-                            </div>
-                        ));
-                    })()}
+                    {clearances.slice().reverse().map((clearance, idx) => (
+                        <div
+                            className={`clearance-card ${idx % 2 === 0 ? 'bg-yellow' : 'bg-white'}`}
+                            key={clearance.id || idx} // Use a fallback key just in case
+                        >
+                            <h2>Clearance #{clearance.id}</h2>
+                            <p><strong>Email:</strong> {clearance.email}</p>
+                            <p><strong>Clearance ID:</strong> {clearance.clearance_id}</p>
+                            <p><strong>Receipts Used:</strong> {Array.isArray(clearance.receipt_ids) ? clearance.receipt_ids.join(', ') : clearance.receipt_ids}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </>
