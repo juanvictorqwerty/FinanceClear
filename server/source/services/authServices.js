@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import { pool } from '../config/database.js';
 import jwt from 'jsonwebtoken'
+import { sendPasswordResetEmail } from '../utils/email.js';
+
 
 const JWT_SECRET = process.env.JWT_SECRET || "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147";
 
@@ -67,6 +69,41 @@ export const loginUser = async(userEmail,password)=>{
     }
 }
 
+export const forgotPasswordService = async (userEmail) => {
+    try {
+        const [rows] = await pool.query(`SELECT email FROM user WHERE email = ?`, [userEmail]);
+        if (rows.length === 0) {
+            return { success: false, message: "User not found" };
+        }
+        const user = rows[0];
+        const resetToken = jwt.sign(
+            { email: user.email },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        await sendPasswordResetEmail(user.email, resetToken);
+
+        return { success: true, message: "Password reset email sent" };
+    }catch (error) {
+        console.error('Forgot password service error:', error);
+        return { success: false, message: "Password reset failed. Please try again later." };
+    }
+    };
+
+export const resetPasswordService = async (token, newPassword) => {
+    try {
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const query=`UPDATE user SET password = ? WHERE email = ?`;
+        const values=[hashedPassword,decodedToken.email];
+        await pool.query(query,values);
+        return { success: true, message: "Password reset successful" };
+    } catch (error) {
+        console.error('Reset password service error:', error);
+        return { success: false, message: "Password reset failed. Please try again later." };
+    }
+}
 export const getUserToken=async(token)=>{
     try {
         const trimmedToken=token.trim();

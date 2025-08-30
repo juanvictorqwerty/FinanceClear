@@ -132,6 +132,10 @@ const LoginScreen = () => {
                     <FaLock className="icon" />
                 </div>
 
+                <div className="forgot-password-link">
+                    <Link to="/forgot-password">Forgot Password?</Link>
+                </div>
+
                 <button type="submit" className="btn">Login</button>
                 <div className="register-link">
                     <p>Or <Link to="/signIn">Register</Link></p>

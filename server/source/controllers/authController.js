@@ -2,9 +2,9 @@ import * as authService from "../services/authServices.js";
 
 export const registerUser = async (req, res) => {
     // Use standard naming (email, username) for consistency with frontend
-    const { email, username, password, matricule } = req.body;
+    const { userEmail, userName, password, matricule } = req.body;
 
-    if (!email || !username || !password) {
+    if (!userEmail || !userName || !password) {
         return res.status(400).json({
             success: false,
             message: "Email, username, and password are required."
@@ -12,7 +12,7 @@ export const registerUser = async (req, res) => {
     }
 
     // Pass user data directly to the service
-    const user = { email, username, password, matricule };
+    const user = { userEmail, userName, password, matricule };
 
     try {
         const response = await authService.registerUser(user);
@@ -45,6 +45,48 @@ export const loginUser = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "An internal error occurred during login."
+        });
+    }
+};
+
+export const forgotPassword = async (req, res) => {
+    const { userEmail} = req.body; // Frontend sends userEmail
+    if (!userEmail) {
+        return res.status(400).json({ success: false, message: "Email required." });
+    }
+    try {
+        const response = await authService.forgotPasswordService(userEmail);
+        if (response.success) {
+            return res.status(200).json({ success: true, message: "Password reset link sent to your email." });
+        } else {
+            return res.status(401).json(response);
+        }
+    } catch (error) {
+        console.error('Forgot password controller error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "An internal error occurred during password reset."
+        });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+    if (!newPassword || !token) {
+        return res.status(400).json({ success: false, message: "Password and token are required." });
+    }
+    try {
+        const response = await authService.resetPasswordService(token, newPassword);
+        if (response.success) {
+            return res.status(200).json({ success: true, message: "Password has been reset successfully." });
+        } else {
+            return res.status(401).json(response);
+        }
+    } catch (error) {
+        console.error('Reset password controller error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "An internal error occurred during password reset."
         });
     }
 };
