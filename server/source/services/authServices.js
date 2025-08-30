@@ -87,8 +87,20 @@ export const forgotPasswordService = async (userEmail) => {
         return { success: false, message: "Password reset failed. Please try again later." };
     }
     };
-    
 
+export const resetPasswordService = async (token, newPassword) => {
+    try {
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const query=`UPDATE user SET password = ? WHERE email = ?`;
+        const values=[hashedPassword,decodedToken.email];
+        await pool.query(query,values);
+        return { success: true, message: "Password reset successful" };
+    } catch (error) {
+        console.error('Reset password service error:', error);
+        return { success: false, message: "Password reset failed. Please try again later." };
+    }
+}
 export const getUserToken=async(token)=>{
     try {
         const trimmedToken=token.trim();

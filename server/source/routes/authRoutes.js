@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { registerUser, loginUser } from '../controllers/authController.js';
 import { loginAdmin, registerAdmin } from '../controllers/adminAuthController.js';
 import { forgotPassword } from '../controllers/authController.js';
+import { resetPassword } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -22,6 +23,8 @@ router.use(authLimiter);
 router.post('/register-user', registerUser);
 router.post('/login-user', loginUser);
 router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
+
 
 // --- Protected Admin Routes ---
 
