@@ -33,7 +33,7 @@ const AdminSignInScreen = () => {
         setIsLoading(true);
         try {
             // Note: This endpoint will need to be created on your backend.
-            const response = await axios.post(`${API_URL}/auth/register-admin`, formValues);
+                        const response = await axios.post(`${API_URL.replace(/\/$/, '')}/api/auth/register-admin`, formValues);
 
             if (response.data.success) {
                 toast.success(response.data.message || "Admin registration successful! Please log in.");

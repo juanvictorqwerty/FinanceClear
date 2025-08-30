@@ -51,7 +51,7 @@ const AdminLoginScreen = () => {
         setIsLoading(true);
         try {
             // Point to the admin login endpoint
-            const response = await axios.post(`${API_URL}/auth/login-admin`, {
+                        const response = await axios.post(`${API_URL.replace(/\/$/, '')}/api/auth/login-admin`, {
                 userEmail: formValues.userEmail,
                 password: formValues.password
             });

@@ -35,7 +35,7 @@ const Search = () => {
         }
         setIsLoading(true);
         try {
-            const response = await axios.post(`${API_URL}/sheets/check-receipts`, {
+                        const response = await axios.post(`${API_URL.replace(/\/$/, '')}/api/sheets/check-receipts`, {
                 receiptIds: filteredIds.map(id => id.trim()),
                 userName: userName.trim(),
                 spreadsheetId: "1djogVeb0vT2Klqnx7HZfON-g1B3i4KV_5426ACNbHJs",

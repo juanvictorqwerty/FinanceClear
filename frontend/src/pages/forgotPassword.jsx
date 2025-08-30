@@ -26,7 +26,8 @@ function ForgotPassword() {
         setSuccess(""); // Clear previous success messages
         try {
             await axios.post(
-                `${API_URL}/api/auth/forgot-password`,
+                                `${API_URL.replace(/\/$/, '')}/api/auth/forgot-password`,
+
             {
                 userEmail,
             }

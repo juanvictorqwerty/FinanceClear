@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import API_URL from '../apiConfig';
 
-const API_BASE = `${API_URL}/admin`;
+const API_BASE = `${API_URL.replace(/\/$/, '')}/api/admin`;
 
 
 
