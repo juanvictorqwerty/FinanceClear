@@ -20,7 +20,7 @@ const AdminSignInScreen = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value });
+        setFormValues({ ...formValues, [name]: value.trim() });
     };
 
     const handleSubmit = async (e) => {

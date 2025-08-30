@@ -23,8 +23,8 @@ const navigate = useNavigate();
 
     const handleInputChange=async(e)=>{
         const {name,value} = e.target;
-        // Trim all inputs except passwords
-        let processedValue = (name === 'password' || name === 'confirmPassword') ? value : value.trim();
+        // Trim inputs in real-time, but exclude passwords and userName to allow spaces
+        let processedValue = (name === 'password' || name === 'confirmPassword' || name === 'userName') ? value : value.trim();
         
         // Apply matricule validation: only letters and numbers
         if (name === 'matricule') {
@@ -60,6 +60,13 @@ const navigate = useNavigate();
             setShowAlert(true);
             return;
         }
+
+        // Validate userName, trimming to catch inputs with only spaces
+        if (!formValues.userName.trim()) {
+            setNameError('Name is required.');
+            setShowAlert(true);
+            return; // Stop submission if name is invalid
+        }
         
         if (formValues.password !== formValues.confirmPassword) {
             setPasswordError('Passwords do not match. Please check your password and confirmation.');
@@ -74,8 +81,8 @@ const navigate = useNavigate();
         
         // Prepare data for server - only send password, not confirmPassword
         const serverData = {
-            userEmail: formValues.userEmail,
-            userName: formValues.userName,
+            userEmail: formValues.userEmail.trim().toLowerCase(),
+            userName: formValues.userName.trim(), // Trim userName just before sending
             password: formValues.password,
             matricule: formValues.matricule
         };
