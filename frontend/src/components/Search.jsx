@@ -26,8 +26,8 @@ const Search = () => {
             setShowAlert(true);
             return;
         }
-        const username = user?.username;
-        if (!username) {
+        const userName = user?.username;
+        if (!userName) {
             setAlertMessage('User not logged in. Cannot check receipts.');
             setAlertType('error');
             setShowAlert(true);
@@ -36,8 +36,9 @@ const Search = () => {
         setIsLoading(true);
         try {
             const response = await axios.post(`${API_URL}/sheets/check-receipts`, {
-                receiptIds: filteredIds,
-                userName: username,
+                receiptIds: filteredIds.map(id => id.trim()),
+                userName: userName.trim(),
+                spreadsheetId: "1djogVeb0vT2Klqnx7HZfON-g1B3i4KV_5426ACNbHJs",
             });
 
             // Always set the main message from the response
@@ -131,7 +132,7 @@ const Search = () => {
                         <ul className="details-list">
                             {processingDetails.map((detail, index) => (
                                 <li key={index} className={`detail-item status-${detail.status}`}>
-                                    <strong>Receipt {detail.receiptId}:</strong> {detail.message}
+                                    <strong>Receipt {detail.receiptIds}:</strong> {detail.message}
                                 </li>
                             ))}
                         </ul>
