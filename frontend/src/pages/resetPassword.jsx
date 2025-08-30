@@ -1,73 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import "./forgotPassword.css"
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './resetPassword.css'; // Import the new CSS file
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [message, setMessage] = useState('');
+    const [token, setToken] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const location = useLocation();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tokenFromUrl = searchParams.get('token');
+        if (!tokenFromUrl) {
+            toast.error('Invalid or missing reset token.');
+            navigate('/login');
+        }
+        setToken(tokenFromUrl);
+    }, [location, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            setMessage('Passwords do not match');
+            toast.error('Passwords do not match');
             return;
         }
 
-        const token = new URLSearchParams(location.search).get('token');
+        if (!token) {
+            toast.error('No token provided.');
+            return;
+        }
+
+        setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token, newPassword: password })
+            const response = await axios.post('http://localhost:5000/api/auth/reset-password', {
+                token,
+                newPassword: password
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setMessage(data.message);
-                setTimeout(() => {
-                    navigate('/');
-                }, 3000);
-            } else {
-                setMessage(data.message);
-            }
+            toast.success(response.data.message || 'Password has been reset successfully.');
+            setTimeout(() => {
+                navigate('/'); // Redirect to login after success
+            }, 3000);
         } catch (error) {
-            console.error('Reset password error:', error);
-            setMessage('An error occurred. Please try again later.');
+            const errorMessage = error.response?.data?.message || 'An error occurred. Please try again later.';
+            toast.error(errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div>
-            <h2>Reset Password</h2>
+        <div className="login-container">
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>New Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+                <div className="login-content">
+                    <h2>Reset Password</h2>
+                    <p className="subtitle">Enter and confirm your new password.</p>
+                    <div className="form-group">
+                        <label htmlFor="password">New Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="confirmPassword">Confirm New Password</label>
+                        <input
+                            id="confirmPassword"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="••••••••"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <button type="submit" disabled={isLoading}>
+                        {isLoading ? 'Resetting...' : 'Reset Password'}
+                    </button>
                 </div>
-                <div>
-                    <label>Confirm New Password</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Reset Password</button>
             </form>
-            {message && <p>{message}</p>}
         </div>
     );
 };
