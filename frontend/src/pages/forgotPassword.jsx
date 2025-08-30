@@ -10,9 +10,18 @@ function ForgotPassword() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
+    const isEmailValid = (email) => {
+        return /^[a-zA-Z0-9._%+]+@ictuniversity\.edu\.cm$/.test(email);
+    };
+    
     const handleForgotPassword = async(e) => {
         e.preventDefault();
         setError(""); // Clear previous errors
+        if (!isEmailValid(userEmail)) {
+            const errorMessage = "Please use an @ictuniversity.edu.cm email address.";
+            setError(errorMessage);
+            return;
+        }
         setSuccess(""); // Clear previous success messages
         try {
             await axios.post(
