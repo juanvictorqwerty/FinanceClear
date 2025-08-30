@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import { pool } from '../config/database.js';
 import jwt from 'jsonwebtoken'
+import { sendPasswordResetEmail } from '../utils/email.js';
 
 
 const JWT_SECRET = process.env.JWT_SECRET || "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147";
@@ -80,8 +81,10 @@ export const forgotPasswordService = async (userEmail) => {
             JWT_SECRET,
             { expiresIn: '1h' }
         );
-        const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
-        return { success: true, message: "Password reset link generated", resetLink: resetLink };
+
+        await sendPasswordResetEmail(user.email, resetToken);
+
+        return { success: true, message: "Password reset email sent" };
     }catch (error) {
         console.error('Forgot password service error:', error);
         return { success: false, message: "Password reset failed. Please try again later." };
