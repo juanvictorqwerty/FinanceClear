@@ -10,20 +10,24 @@ class GoogleSheetsServiceClass {
 
     async initializeAuth() {
         try {
-            // Initialize Google Auth using service account credentials
-            this.auth = new google.auth.GoogleAuth({
-                keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE, // Path to service account JSON file
+            let authOptions = {
                 scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-            });
+            };
 
-            // Alternative: Use credentials from environment variables
-            if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE && process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS) {
+            if (process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS) {
+                // Prioritize credentials string if available
                 const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS);
-                this.auth = new google.auth.GoogleAuth({
-                    credentials: credentials,
-                    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-                });
+                authOptions.credentials = credentials;
+                console.log('Authenticating with Google Sheets using service account credentials string.');
+            } else if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE) {
+                // Fallback to key file path if credentials string is not set
+                authOptions.keyFile = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
+                console.log('Authenticating with Google Sheets using service account key file path.');
+            } else {
+                throw new Error('Neither GOOGLE_SERVICE_ACCOUNT_CREDENTIALS nor GOOGLE_SERVICE_ACCOUNT_KEY_FILE environment variable is set.');
             }
+
+            this.auth = new google.auth.GoogleAuth(authOptions);
 
             this.sheets = google.sheets({ version: 'v4', auth: this.auth, timeout: 30000 });
             console.log('Google Sheets API initialized successfully');
