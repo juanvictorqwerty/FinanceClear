@@ -42,7 +42,7 @@ const LoginScreen = () => {
         }
 
         try {
-            const response = await axios.post(`${API_URL}/auth/login-user`, {
+                                    const response = await axios.post(`${API_URL.replace(/\/$/, '')}/api/auth/login-user`, {
                 userEmail: formValues.userEmail,
                 password: formValues.password
             });
