@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import { pool } from '../config/database.js';
 import jwt from 'jsonwebtoken'
 
+
 const JWT_SECRET = process.env.JWT_SECRET || "jWTrandomstringSecretUserToken1sttimeIuseitlearNINGEveryDay147";
 
 export const registerUser = async (user) => {
@@ -66,6 +67,27 @@ export const loginUser = async(userEmail,password)=>{
         return {success:false,message:"Login failed. Please try again later."}
     }
 }
+
+export const forgotPasswordService = async (userEmail) => {
+    try {
+        const [rows] = await pool.query(`SELECT email FROM user WHERE email = ?`, [userEmail]);
+        if (rows.length === 0) {
+            return { success: false, message: "User not found" };
+        }
+        const user = rows[0];
+        const resetToken = jwt.sign(
+            { email: user.email },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+        const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+        return { success: true, message: "Password reset link generated", resetLink: resetLink };
+    }catch (error) {
+        console.error('Forgot password service error:', error);
+        return { success: false, message: "Password reset failed. Please try again later." };
+    }
+    };
+    
 
 export const getUserToken=async(token)=>{
     try {

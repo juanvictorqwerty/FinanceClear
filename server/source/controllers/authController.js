@@ -49,6 +49,29 @@ export const loginUser = async (req, res) => {
     }
 };
 
+export const forgotPassword = async (req, res) => {
+    const { userEmail} = req.body; // Frontend sends userEmail
+    if (!userEmail) {
+        return res.status(400).json({ success: false, message: "Email required." });
+    }
+    try {
+        const response = await authService.forgotPasswordService(userEmail);
+        if (response.success) {
+            // TODO: Implement email sending functionality
+            console.log('Reset link:', response.resetLink);
+            return res.status(200).json({ success: true, message: "Password reset link sent to your email." });
+        } else {
+            return res.status(401).json(response);
+        }
+    } catch (error) {
+        console.error('Forgot password controller error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "An internal error occurred during password reset."
+        });
+    }
+};
+
 export const getUserByToken = async (req, res) => {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(' ')[1];
