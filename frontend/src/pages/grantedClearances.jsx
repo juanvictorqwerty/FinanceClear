@@ -21,7 +21,7 @@ function GrantedClearances() {
             }
             try {
                 // Fetch the profile with used_receipt JSON
-                const response = await axios.post(`${API_URL}/profile/get-profile`, {
+                                const response = await axios.post(`${API_URL.replace(/\/$/, '')}/api/profile/get-profile`, {
                     username: user.username
                 });
                 console.log('API response:', response.data);
