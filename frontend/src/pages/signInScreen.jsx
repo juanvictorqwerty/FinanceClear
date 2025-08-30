@@ -88,7 +88,7 @@ const navigate = useNavigate();
         };
         
         try {
-            const apiUrl = new URL('auth/register-user', API_URL).href;
+            const apiUrl = `${API_URL.replace(/\/$/, '')}/auth/register-user`;
             
             const response = await fetch(apiUrl, {
                 method: 'POST',
