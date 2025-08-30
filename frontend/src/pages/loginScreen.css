@@ -118,6 +118,24 @@ body {
     height: 40px;
     animation: spin 1s linear infinite;
 }
+/* === Forgot Password Link === */
+.forgot-password-link {
+  text-align: right;
+  margin-top: -10px; /* Pulls the link up slightly */
+  margin-bottom: 20px; /* Adds space above the login button */
+}
+
+.forgot-password-link a {
+  color: #f8f7f7;
+  font-size: 0.9em;
+  text-decoration: none; /* Remove underline by default */
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link a:hover {
+  color: #03dcfe;
+  text-decoration: underline; /* Add underline on hover */
+}
 
 @keyframes spin {
     0% { transform: rotate(0deg); }

@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Lazy load all components
 const LoginScreen = lazy(() => import('./pages/loginScreen'));
 const SignInScreen = lazy(() => import('./pages/signInScreen'));
+const ForgotPassword = lazy(() => import('./pages/forgotPassword'));
 const NotFound = lazy(() => import('./pages/page_not_found'));
 const Admin = lazy(() => import('./pages/ADMIN'));
 const UserHomeScreen = lazy(() => import('./pages/userHomeScreen'));
@@ -54,6 +55,7 @@ function App() {
               <Route path="/signIn" element={<SignInScreen />} />
               <Route path="/admin-signIn" element={<AdminSignInScreen />} />
               <Route path="/admin-login" element={<AdminLoginScreen />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
 
               {/* Protected User Routes */}
               <Route path="/Home" element={<UserProtectedRoute><UserHomeScreen /></UserProtectedRoute>} />
