@@ -350,6 +350,12 @@ class GoogleSheetsServiceClass {
         try {
             await this.ensureInitialized();
 
+            // Log incoming parameters for debugging
+            console.log('[DEBUG] checkReceiptsAndUser - Incoming parameters:');
+            console.log(`[DEBUG]   spreadsheetId: ${spreadsheetId}`);
+            console.log(`[DEBUG]   receiptIds:`, receiptIds);
+            console.log(`[DEBUG]   userName: ${userName}`);
+
             // 1. Get user's financial profile from DB
             const profileResult = await getUserProfileByUsername(userName);
             if (!profileResult.success) {
