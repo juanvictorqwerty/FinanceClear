@@ -2,7 +2,6 @@ import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Lazy load all components
@@ -22,7 +21,7 @@ const UserProtectedRoute = ({ children }) => {
   const { isLoggedIn } = useAuth();
   if (!isLoggedIn) {
     // Redirect to the main login page if not logged in
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
   return children;
 };
@@ -52,7 +51,7 @@ function App() {
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               {/* Public Routes */}
-              <Route path="/" element={<LoginScreen />} />
+              <Route path="/login" element={<LoginScreen />} />
               <Route path="/signIn" element={<SignInScreen />} />
               <Route path="/admin-signIn" element={<AdminSignInScreen />} />
               <Route path="/admin-login" element={<AdminLoginScreen />} />
@@ -61,7 +60,7 @@ function App() {
 
 
               {/* Protected User Routes */}
-              <Route path="/Home" element={<UserProtectedRoute><UserHomeScreen /></UserProtectedRoute>} />
+              <Route path="/" element={<UserProtectedRoute><UserHomeScreen /></UserProtectedRoute>} />
               <Route path="/clearances" element={<UserProtectedRoute><Clearances /></UserProtectedRoute>} />
 
               {/* Protected Admin Route */}

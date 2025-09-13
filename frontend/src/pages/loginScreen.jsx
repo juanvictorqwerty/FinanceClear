@@ -51,7 +51,7 @@ const LoginScreen = () => {
                 toast.success(response.data.message || "Login Successful");
                 // Use the login function from AuthContext
                 login(response.data.user, response.data.token);
-                navigate('/Home');
+                navigate('/');
             } else {
                 setEmailError(response.data.message || "Login Failed");
                 setShowAlert(true);
@@ -69,7 +69,7 @@ const LoginScreen = () => {
         // If already logged in via AuthContext (from localStorage), navigate to Home
         if (isLoggedIn) {
             toast.success("Welcome back!");
-            navigate('/Home');
+            navigate('/');
             setIsLoading(false);
             setIsCheckingAuth(false);
         } else {

@@ -10,7 +10,7 @@ const Header = () => {
 
     const handleLogout = () => {
         logout(); // Call the logout function from AuthContext
-        navigate('/');
+        navigate('/login');
     };
 
     return (
@@ -25,8 +25,8 @@ const Header = () => {
             <ul className="navbar-links">
                 <li>
                     <Link
-                        to="/Home"
-                        className={location.pathname === "/Home" ? "active" : ''}
+                        to="/"
+                        className={location.pathname === "/" ? "active" : ''}
                     >
                         Home
                     </Link>

@@ -111,7 +111,7 @@ const navigate = useNavigate();
                 // Store token and redirect
                 localStorage.setItem("authToken", data.token);
                 localStorage.setItem("keepLoggedIn", JSON.stringify(true));
-                navigate('/Home');
+                navigate('/');
             } else {
                 console.error('Registration failed:', data.message);
                 setPasswordError(data.message || 'Registration failed. Please try again.');
