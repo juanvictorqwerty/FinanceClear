@@ -39,6 +39,14 @@ const Header = () => {
                         Clearances
                     </Link>
                 </li>
+                <li>
+                    <Link
+                        to="/about"
+                        className={location.pathname === '/about' ? "active" : ''}
+                    >
+                        About Us
+                    </Link>
+                </li>
 
                 {isLoggedIn ? ( // Only show logout if logged in
                     <li>

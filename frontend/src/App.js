@@ -15,6 +15,7 @@ const UserHomeScreen = lazy(() => import('./pages/userHomeScreen'));
 const Clearances = lazy(() => import('./pages/grantedClearances'));
 const AdminLoginScreen = lazy(() => import('./pages/ADMIN_LOGIN'));
 const AdminSignInScreen = lazy(() => import('./pages/ADMIN_SIGNIN'));
+const AboutUs = lazy(() => import('./pages/aboutUs'));
 
 // Protected route for regular users
 const UserProtectedRoute = ({ children }) => {
@@ -57,6 +58,8 @@ function App() {
               <Route path="/admin-login" element={<AdminLoginScreen />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/about" element={<AboutUs />} />
+
 
 
               {/* Protected User Routes */}
